@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crest of Glory - โปรไฟล์ผู้เล่น</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0b0b0b;
+            --card-bg: #141414;
+            --text-primary: #ffffff;
+            --text-secondary: #888888;
+            --border-color: #262626;
+            --border-focus: #ffffff;
+            --accent-color: #ffffff;
+            --accent-hover: #e0e0e0;
+            --btn-text: #0b0b0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            padding-bottom: 40px;
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .back-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            border-color: var(--border-focus);
+        }
+
+        .page-title {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .profile-avatar-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .main-avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background-color: var(--border-color);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .main-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .avatar-overlay {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: rgba(0,0,0,0.6);
+            font-size: 9px;
+            text-align: center;
+            padding: 3px 0;
+            color: #fff;
+            display: none;
+        }
+
+        .main-avatar:hover .avatar-overlay {
+            display: block;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .section-heading {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 14px;
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--border-focus);
+        }
+
+        .form-group input[readonly] {
+            color: var(--text-secondary);
+            border-style: dashed;
+            cursor: not-allowed;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .info-box {
+            background-color: rgba(255,255,255,0.01);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .info-box span {
+            display: block;
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .info-box strong {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .stat-bar-container {
+            margin-bottom: 16px;
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .stat-progress-bg {
+            width: 100%;
+            height: 8px;
+            background-color: var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .stat-progress-fill {
+            height: 100%;
+            background-color: var(--text-primary);
+            width: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .stat-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .upgrade-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .upgrade-btn:hover {
+            border-color: var(--border-focus);
+            background-color: rgba(255,255,255,0.05);
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--accent-color);
+            color: var(--btn-text);
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background-color 0.3s;
+        }
+
+        .action-btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        #popup-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .popup-content {
+            background: #141414;
+            border: 1px solid var(--border-color);
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 320px;
+            width: 90%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+        }
+
+        .popup-message {
+            font-size: 14px;
+            margin-bottom: 25px;
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .popup-btn {
+            padding: 10px 24px;
+            background: var(--accent-color);
+            color: var(--btn-text);
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- แถบด้านบน -->
+        <div class="header-nav">
+            <a href="home.html" class="back-btn">กลับหน้าหลัก</a>
+            <h1 class="page-title">Profile</h1>
+            <div style="width: 75px;"></div>
+        </div>
+
+        <!-- รูปโปรไฟล์ (คลิกเลือกรูปจากแกลเลอรี) -->
+        <div class="profile-avatar-section">
+            <div class="main-avatar" id="avatar-preview-box" onclick="document.getElementById('avatar-file-input').click()" title="คลิกเพื่อเลือกรูปจากแกลเลอรี">
+                <span id="avatar-preview-text">?</span>
+                <div class="avatar-overlay">เปลี่ยนรูป</div>
+            </div>
+            <input type="file" id="avatar-file-input" accept="image/*" style="display: none;" onchange="handleImageUpload(this)">
+        </div>
+
+        <!-- 1. ข้อมูลที่แก้ไขได้ -->
+        <div class="card">
+            <p class="section-heading">ข้อมูลที่แก้ไขได้</p>
+            <form id="profile-form">
+                <div class="form-group">
+                    <label for="name">ชื่อ (Name)</label>
+                    <input type="text" id="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="username">ยูเซอร์เนม (Username)</label>
+                    <input type="text" id="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="birthday">วันเกิด (วัน / เดือน เช่น 15/08)</label>
+                    <input type="text" id="birthday">
+                </div>
+                <div class="form-group">
+                    <label>กิลด์ที่สังกัด</label>
+                    <input type="text" id="guild-name-display" readonly value="ไม่มี">
+                </div>
+                <button type="submit" id="save-btn" class="action-btn">บันทึกข้อมูล</button>
+            </form>
+        </div>
+
+        <!-- 2. ข้อมูลที่เปลี่ยนแปลงไม่ได้ -->
+        <div class="card">
+            <p class="section-heading">ข้อมูลระบบ</p>
+            <div class="info-grid">
+                <div class="info-box">
+                    <span>ID ผู้เล่น</span>
+                    <strong id="info-player-id">--------</strong>
+                </div>
+                <div class="info-box">
+                    <span>ภารกิจทั้งหมด</span>
+                    <strong id="info-total-missions">0</strong>
+                </div>
+                <div class="info-box">
+                    <span>เลเวลปัจจุบัน</span>
+                    <strong id="info-level">1</strong>
+                </div>
+                <div class="info-box">
+                    <span>ค่าประสบการณ์ (EXP)</span>
+                    <strong id="info-exp">0 / 200</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. หลอดสเตตัส (พลังงาน, อาหาร, HP) พร้อมปุ่มอัปเลเวล -->
+        <div class="card">
+            <p class="section-heading">สเตตัสตัวละคร</p>
+            
+            <div class="stat-bar-container">
+                <div class="stat-header">
+                    <span>พลังงาน (Energy)</span>
+                    <span id="energy-text">100 / 100</span>
+                </div>
+                <div class="stat-progress-bg">
+                    <div class="stat-progress-fill" id="energy-fill" style="width: 100%;"></div>
+                </div>
+                <div class="stat-footer">
+                    <span id="energy-lvl-text">เลเวล 1 (อัปถัดไป: 50 Gold)</span>
+                    <button type="button" class="upgrade-btn" id="upgrade-energy-btn">อัปเลเวลหลอด</button>
+                </div>
+            </div>
+
+            <div class="stat-bar-container">
+                <div class="stat-header">
+                    <span>ความหิว / อาหาร (Food)</span>
+                    <span id="food-text">100 / 100</span>
+                </div>
+                <div class="stat-progress-bg">
+                    <div class="stat-progress-fill" id="food-fill" style="width: 100%;"></div>
+                </div>
+                <div class="stat-footer">
+                    <span id="food-lvl-text">เลเวล 1 (อัปถัดไป: 50 Gold)</span>
+                    <button type="button" class="upgrade-btn" id="upgrade-food-btn">อัปเลเวลหลอด</button>
+                </div>
+            </div>
+
+            <div class="stat-bar-container" style="margin-bottom: 0;">
+                <div class="stat-header">
+                    <span>หลอดเลือด (HP)</span>
+                    <span id="hp-text">100 / 100</span>
+                </div>
+                <div class="stat-progress-bg">
+                    <div class="stat-progress-fill" id="hp-fill" style="width: 100%;"></div>
+                </div>
+                <div class="stat-footer">
+                    <span id="hp-lvl-text">เลเวล 1 (อัปถัดไป: 50 Gold)</span>
+                    <button type="button" class="upgrade-btn" id="upgrade-hp-btn">อัปเลเวลหลอด</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ป๊อปอัพแจ้งเตือน -->
+    <div id="popup-modal">
+        <div class="popup-content">
+            <p class="popup-message" id="popup-text"></p>
+            <button class="popup-btn" id="popup-close-btn">ตกลง</button>
+        </div>
+    </div>
+
+    <!-- Script ทำงานแบบเบ็ดเสร็จในไฟล์เดียว -->
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+        const SUPABASE_URL = 'https://diyqqdqitldcwkcrjjme.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_XRBLBS50FT1HuIf1A50HCA_eLFwQFnW';
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ตั้งค่า Cloudinary ของคุณที่นี่โดยตรง
+        const CLOUD_NAME = 'dbpp7dgrv'; 
+        const UPLOAD_PRESET = 'crest_of_glory'; 
+
+        let currentUser = null;
+        let currentProfile = null;
+        let tempAvatarUrl = '';
+        let popupCallback = null;
+
+        function showPopup(message, callback = null) {
+            document.getElementById('popup-text').textContent = message;
+            document.getElementById('popup-modal').style.display = 'flex';
+            popupCallback = callback;
+        }
+
+        document.getElementById('popup-close-btn').addEventListener('click', () => {
+            document.getElementById('popup-modal').style.display = 'none';
+            if (popupCallback) {
+                popupCallback();
+                popupCallback = null;
+            }
+        });
+
+        function renderAvatar(url, name) {
+            const box = document.getElementById('avatar-preview-box');
+            if (url && url.trim() !== '') {
+                box.innerHTML = `<img src="${url.trim()}" alt="Avatar"><div class="avatar-overlay">เปลี่ยนรูป</div>`;
+            } else {
+                const initial = name ? name.charAt(0).toUpperCase() : 'P';
+                box.innerHTML = `<span>${initial}</span><div class="avatar-overlay">เปลี่ยนรูป</div>`;
+            }
+        }
+
+        // ฟังก์ชันอัปโหลดรูปภาพผ่าน Cloudinary (รองรับเลือกรูปจากแกลเลอรี)
+        window.handleImageUpload = async function(input) {
+            if (input.files && input.files[0]) {
+                showPopup('กำลังอัปโหลดรูปภาพไปยัง Cloudinary...');
+                try {
+                    const file = input.files[0];
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    formData.append('upload_preset', UPLOAD_PRESET);
+
+                    const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const data = await response.json();
+                    if (data.secure_url) {
+                        tempAvatarUrl = data.secure_url;
+                        renderAvatar(tempAvatarUrl, document.getElementById('name').value);
+                        showPopup('อัปโหลดรูปภาพสำเร็จ! กดยืนยันปุ่ม "บันทึกข้อมูล" ด้านล่าง');
+                    } else {
+                        throw new Error(data.error?.message || 'อัปโหลดไม่สำเร็จ');
+                    }
+                } catch (err) {
+                    showPopup('เกิดข้อผิดพลาดในการอัปโหลด: ' + err.message);
+                }
+            }
+        };
+
+        function updateStatDisplay(type, current, max, level) {
+            const fill = document.getElementById(`${type}-fill`);
+            const text = document.getElementById(`${type}-text`);
+            const lvlText = document.getElementById(`${type}-lvl-text`);
+
+            const percent = Math.min(100, Math.max(0, (current / max) * 100));
+            fill.style.width = `${percent}%`;
+            text.textContent = `${Math.round(current)} / ${Math.round(max)}`;
+
+            const cost = level * 50;
+            lvlText.textContent = `เลเวล ${level} (อัปถัดไป: ${cost} Gold)`;
+        }
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+            if (sessionError || !session) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            currentUser = session.user;
+            await loadProfileData();
+
+            // ผูก Event Listener ปุ่มบันทึกข้อมูล
+            document.getElementById('profile-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const name = document.getElementById('name').value.trim();
+                const username = document.getElementById('username').value.trim();
+                const birthday = document.getElementById('birthday').value.trim();
+
+                const { error: updateErr } = await supabase
+                    .from('profiles')
+                    .update({
+                        name: name,
+                        username: username,
+                        birthday: birthday,
+                        avatar_url: tempAvatarUrl
+                    })
+                    .eq('id', currentUser.id);
+
+                if (updateErr) {
+                    showPopup('บันทึกข้อมูลไม่สำเร็จ: ' + updateErr.message);
+                } else {
+                    showPopup('บันทึกข้อมูลโปรไฟล์เรียบร้อยแล้ว', async () => {
+                        await loadProfileData();
+                    });
+                }
+            });
+
+            // ผูก Event Listener ปุ่มอัปเกรดสเตตัส
+            document.getElementById('upgrade-energy-btn').addEventListener('click', () => upgradeStat('energy'));
+            document.getElementById('upgrade-food-btn').addEventListener('click', () => upgradeStat('food'));
+            document.getElementById('upgrade-hp-btn').addEventListener('click', () => upgradeStat('hp'));
+        });
+
+        async function loadProfileData() {
+            const { data: profile, err } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', currentUser.id)
+                .maybeSingle();
+
+            if (err || !profile) {
+                showPopup('ไม่สามารถโหลดข้อมูลโปรไฟล์จาก Supabase ได้');
+                return;
+            }
+
+            currentProfile = profile;
+            tempAvatarUrl = profile.avatar_url || '';
+
+            // ดึงข้อมูลมาหยอดลงในช่องฟอร์มและหน้าจอโดยตรง
+            document.getElementById('name').value = profile.name || '';
+            document.getElementById('username').value = profile.username || '';
+            document.getElementById('birthday').value = profile.birthday || '';
+
+            renderAvatar(profile.avatar_url, profile.name);
+
+            document.getElementById('info-player-id').textContent = profile.player_id || '--------';
+            document.getElementById('info-total-missions').textContent = profile.total_missions || 0;
+            document.getElementById('info-level').textContent = profile.level || 1;
+
+            const reqExp = 200 + ((profile.level || 1) - 1) * 50;
+            document.getElementById('info-exp').textContent = `${profile.exp || 0} / ${reqExp}`;
+
+            updateStatDisplay('energy', profile.energy, profile.max_energy, profile.energy_level);
+            updateStatDisplay('food', profile.food, profile.max_food, profile.food_level);
+            updateStatDisplay('hp', profile.hp, profile.max_hp, profile.hp_level);
+
+            if (profile.guild_id) {
+                const { data: guild } = await supabase
+                    .from('guilds')
+                    .select('name')
+                    .eq('id', profile.guild_id)
+                    .maybeSingle();
+                if (guild && guild.name) {
+                    document.getElementById('guild-name-display').value = guild.name;
+                }
+            }
+        }
+
+        async function upgradeStat(type) {
+            if (!currentProfile) return;
+
+            const lvlField = `${type}_level`;
+            const maxField = `max_${type}`;
+            const currentLvl = currentProfile[lvlField] || 1;
+            const cost = currentLvl * 50;
+
+            const { data: bank, error: bankErr } = await supabase
+                .from('bank_accounts')
+                .select('gold')
+                .eq('id', currentUser.id)
+                .maybeSingle();
+
+            if (bankErr || !bank) {
+                showPopup('ไม่พบข้อมูลบัญชีธนาคารของคุณ');
+                return;
+            }
+
+            if (bank.gold < cost) {
+                showPopup(`เงิน Gold ในธนาคารไม่พอ! ต้องการ ${cost} Gold แต่คุณมี ${bank.gold} Gold`);
+                return;
+            }
+
+            const newGold = bank.gold - cost;
+            const newLvl = currentLvl + 1;
+            const newMax = currentProfile[maxField] + 25;
+
+            const { error: updateBankErr } = await supabase
+                .from('bank_accounts')
+                .update({ gold: newGold })
+                .eq('id', currentUser.id);
+
+            if (updateBankErr) {
+                showPopup('เกิดข้อผิดพลาดในการหักเงินธนาคาร');
+                return;
+            }
+
+            const updateData = {};
+            updateData[lvlField] = newLvl;
+            updateData[maxField] = newMax;
+            updateData[type] = newMax;
+
+            const { error: updateProfileErr } = await supabase
+                .from('profiles')
+                .update(updateData)
+                .eq('id', currentUser.id);
+
+            if (updateProfileErr) {
+                showPopup('อัปเลเวลสเตตัสไม่สำเร็จ');
+            } else {
+                showPopup(`อัปเลเวล ${type.toUpperCase()} สำเร็จ! ขีดจำกัดสูงสุดเพิ่มเป็น ${newMax} หน่วย`, async () => {
+                    await loadProfileData();
+                });
+            }
+        }
+    </script>
+</body>
+</html>
