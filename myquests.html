@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crest of Glory - ภารกิจส่วนตัว</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0b0b0b;
+            --card-bg: #141414;
+            --text-primary: #ffffff;
+            --text-secondary: #888888;
+            --border-color: #262626;
+            --border-focus: #ffffff;
+            --accent-color: #ffffff;
+            --accent-hover: #e0e0e0;
+            --btn-text: #0b0b0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            padding-bottom: 40px;
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .back-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            border-color: var(--border-focus);
+        }
+
+        .page-title {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .section-heading {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* การ์ดภารกิจ */
+        .quest-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: border-color 0.2s;
+        }
+
+        .quest-card:hover {
+            border-color: var(--border-focus);
+        }
+
+        .quest-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 2px;
+        }
+
+        .quest-desc {
+            font-size: 11px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .quest-reward {
+            font-size: 11px;
+            color: #f39c12;
+            font-weight: 500;
+        }
+
+        .do-quest-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--text-primary);
+            color: var(--btn-text);
+            border: none;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: background-color 0.3s;
+        }
+
+        .do-quest-btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .coming-soon {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* ป๊อปอัพแจ้งเตือน */
+        #popup-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1300;
+            padding: 20px;
+        }
+
+        .popup-content {
+            background: #141414;
+            border: 1px solid var(--border-color);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 360px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+        }
+
+        .popup-message {
+            font-size: 13px;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            line-height: 1.6;
+            white-space: pre-line;
+            text-align: left;
+            background: rgba(255,255,255,0.02);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .popup-btn {
+            padding: 10px 24px;
+            background: var(--accent-color);
+            color: var(--btn-text);
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- แถบด้านบน -->
+        <div class="header-nav">
+            <a href="home.html" class="back-btn">กลับหน้าหลัก</a>
+            <h1 class="page-title">Mission</h1>
+            <div style="width: 75px;"></div>
+        </div>
+
+        <!-- รายการภารกิจส่วนตัว -->
+        <div class="card">
+            <p class="section-heading">ภารกิจผู้เล่น</p>
+            <div id="quests-container">
+                <div class="coming-soon">Coming Soon</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ป๊อปอัพแจ้งเตือน -->
+    <div id="popup-modal">
+        <div class="popup-content">
+            <p class="popup-message" id="popup-text"></p>
+            <button class="popup-btn" id="popup-close-btn">ตกลง</button>
+        </div>
+    </div>
+
+    <!-- Script ทำงานหน้า Mission -->
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+        const SUPABASE_URL = 'https://diyqqdqitldcwkcrjjme.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_XRBLBS50FT1HuIf1A50HCA_eLFwQFnW';
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentUser = null;
+        let currentProfile = null;
+        let popupCallback = null;
+
+        function showPopup(message, callback = null) {
+            document.getElementById('popup-text').textContent = message;
+            document.getElementById('popup-modal').style.display = 'flex';
+            popupCallback = callback;
+        }
+
+        document.getElementById('popup-close-btn').addEventListener('click', () => {
+            document.getElementById('popup-modal').style.display = 'none';
+            if (popupCallback) {
+                popupCallback();
+                popupCallback = null;
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            const { data: { session }, error } = await supabase.auth.getSession();
+            if (error || !session) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            currentUser = session.user;
+            const { data: profile } = await supabase.from('profiles').select('*').eq('id', currentUser.id).maybeSingle();
+            currentProfile = profile;
+
+            await loadMissions();
+        });
+
+        async function loadMissions() {
+            const container = document.getElementById('quests-container');
+            container.innerHTML = '<div class="coming-soon">Coming Soon</div>';
+
+            // ดึงภารกิจเฉพาะประเภท mission
+            const { data: quests, error } = await supabase.from('quests').select('*').eq('quest_type', 'mission');
+
+            if (error || !quests || quests.length === 0) {
+                return;
+            }
+
+            container.innerHTML = '';
+            quests.forEach(q => {
+                const card = document.createElement('div');
+                card.className = 'quest-card';
+                card.innerHTML = `
+                    <div class="quest-title">${q.title}</div>
+                    <div class="quest-desc">${q.description}</div>
+                    <div class="quest-reward">รางวัล: +${q.reward_exp} Exp | +${q.reward_money} Gold</div>
+                    <button type="button" class="do-quest-btn" onclick="completeQuest('${q.id}', ${q.reward_exp}, ${q.reward_money})">ทำภารกิจ</button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        window.completeQuest = async function(questId, rewardExp, rewardMoney) {
+            // โหลดข้อมูลโปรไฟล์ล่าสุดเพื่อเช็คพลังงาน
+            const { data: profile } = await supabase.from('profiles').select('*').eq('id', currentUser.id).maybeSingle();
+            if (!profile) return;
+
+            const energyCost = 10;
+            if (Number(profile.energy) < energyCost) {
+                showPopup('พลังงานของคุณไม่เพียงพอสำหรับการทำภารกิจ กรุณารอพลังงานฟื้นฟูหรือใช้ยาเพิ่มพลังงาน');
+                return;
+            }
+
+            // หักพลังงาน และเพิ่มจำนวนภารกิจที่ทำทั้งหมด (total_missions) + Exp
+            let newEnergy = Number(profile.energy) - energyCost;
+            let newExp = Number(profile.exp) + rewardExp;
+            let newTotalMissions = Number(profile.total_missions) + 1;
+            let currentLevel = Number(profile.level);
+
+            // เช็คเลเวลอัปเบื้องต้น (เช่น ทุกๆ 100 Exp เลเวลอัป +1)
+            let expNeededForLevelUp = currentLevel * 100;
+            if (newExp >= expNeededForLevelUp) {
+                currentLevel += 1;
+                newExp -= expNeededForLevelUp;
+            }
+
+            await supabase.from('profiles').update({
+                energy: newEnergy,
+                exp: newExp,
+                level: currentLevel,
+                total_missions: newTotalMissions
+            }).eq('id', currentUser.id);
+
+            // เพิ่มเงินรางวัลเข้าบัญชีธนาคารส่วนตัว
+            const { data: bank } = await supabase.from('bank_accounts').select('*').eq('id', currentUser.id).maybeSingle();
+            if (bank) {
+                let newGold = Number(bank.gold) + rewardMoney;
+                await supabase.from('bank_accounts').update({ gold: newGold }).eq('id', currentUser.id);
+            }
+
+            // บันทึกประวัติการทำภารกิจ
+            await supabase.from('user_completed_quests').insert({
+                user_id: currentUser.id,
+                quest_id: questId
+            });
+
+            showPopup(`ทำภารกิจสำเร็จ!\nได้รับ +${rewardExp} Exp และ +${rewardMoney} Gold`, () => {
+                location.reload();
+            });
+        };
+    </script>
+</body>
+</html>
