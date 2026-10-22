@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crest of Glory - ห้องครัว</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0b0b0b;
+            --card-bg: #141414;
+            --text-primary: #ffffff;
+            --text-secondary: #888888;
+            --border-color: #262626;
+            --border-focus: #ffffff;
+            --accent-color: #ffffff;
+            --accent-hover: #e0e0e0;
+            --btn-text: #0b0b0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            padding-bottom: 40px;
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .back-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            border-color: var(--border-focus);
+        }
+
+        .page-title {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* เมนูแท็บหมวดหมู่ */
+        .tab-menu {
+            display: flex;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 4px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-align: center;
+        }
+
+        .tab-btn.active {
+            background-color: var(--text-primary);
+            color: var(--btn-text);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .section-heading {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* การ์ดรายการสูตรอาหาร/ยา */
+        .recipe-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: border-color 0.2s;
+        }
+
+        .recipe-card:hover {
+            border-color: var(--border-focus);
+        }
+
+        .recipe-header {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .recipe-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            background-color: #262626;
+            object-fit: cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: #555;
+            flex-shrink: 0;
+        }
+
+        .recipe-info {
+            flex: 1;
+        }
+
+        .recipe-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 2px;
+        }
+
+        .recipe-details {
+            font-size: 11px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .ingredients-box {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px 10px;
+            font-size: 11px;
+            color: #ccc;
+        }
+
+        .ingredients-title {
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            font-size: 10px;
+        }
+
+        .cook-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--text-primary);
+            color: var(--btn-text);
+            border: none;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: background-color 0.3s;
+        }
+
+        .cook-btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .coming-soon {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* ป๊อปอัพแจ้งเตือน */
+        #popup-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1300;
+            padding: 20px;
+        }
+
+        .popup-content {
+            background: #141414;
+            border: 1px solid var(--border-color);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 360px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+        }
+
+        .popup-message {
+            font-size: 13px;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            line-height: 1.6;
+            white-space: pre-line;
+            text-align: left;
+            background: rgba(255,255,255,0.02);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .popup-btn {
+            padding: 10px 24px;
+            background: var(--accent-color);
+            color: var(--btn-text);
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- แถบด้านบน -->
+        <div class="header-nav">
+            <a href="home.html" class="back-btn">กลับหน้าหลัก</a>
+            <h1 class="page-title">Kitchen</h1>
+            <div style="width: 75px;"></div>
+        </div>
+
+        <!-- แท็บสลับหมวดหมู่ -->
+        <div class="tab-menu">
+            <button type="button" class="tab-btn active" onclick="switchKitchenTab('food')">อาหาร</button>
+            <button type="button" class="tab-btn" onclick="switchKitchenTab('potion')">ยา</button>
+        </div>
+
+        <!-- หมวดอาหาร -->
+        <div id="content-food" class="tab-content active">
+            <div class="card">
+                <p class="section-heading">รายการอาหาร</p>
+                <div id="food-recipes-container">
+                    <div class="coming-soon">Coming Soon</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- หมวดยา -->
+        <div id="content-potion" class="tab-content">
+            <div class="card">
+                <p class="section-heading">รายการปรุงยา</p>
+                <div id="potion-recipes-container">
+                    <div class="coming-soon">Coming Soon</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ป๊อปอัพแจ้งเตือน -->
+    <div id="popup-modal">
+        <div class="popup-content">
+            <p class="popup-message" id="popup-text"></p>
+            <button class="popup-btn" id="popup-close-btn">ตกลง</button>
+        </div>
+    </div>
+
+    <!-- Script ทำงานหน้าห้องครัว -->
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+        const SUPABASE_URL = 'https://diyqqdqitldcwkcrjjme.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_XRBLBS50FT1HuIf1A50HCA_eLFwQFnW';
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentUser = null;
+        let currentProfile = null;
+        let popupCallback = null;
+
+        function showPopup(message, callback = null) {
+            document.getElementById('popup-text').textContent = message;
+            document.getElementById('popup-modal').style.display = 'flex';
+            popupCallback = callback;
+        }
+
+        document.getElementById('popup-close-btn').addEventListener('click', () => {
+            document.getElementById('popup-modal').style.display = 'none';
+            if (popupCallback) {
+                popupCallback();
+                popupCallback = null;
+            }
+        });
+
+        window.switchKitchenTab = function(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            if (tabName === 'food') {
+                document.querySelectorAll('.tab-btn')[0].classList.add('active');
+                document.getElementById('content-food').classList.add('active');
+            } else if (tabName === 'potion') {
+                document.querySelectorAll('.tab-btn')[1].classList.add('active');
+                document.getElementById('content-potion').classList.add('active');
+            }
+        };
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            const { data: { session }, error } = await supabase.auth.getSession();
+            if (error || !session) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            currentUser = session.user;
+            const { data: profile } = await supabase.from('profiles').select('*').eq('id', currentUser.id).maybeSingle();
+            currentProfile = profile;
+
+            await loadRecipes();
+        });
+
+        async function loadRecipes() {
+            const foodContainer = document.getElementById('food-recipes-container');
+            const potionContainer = document.getElementById('potion-recipes-container');
+            
+            foodContainer.innerHTML = '<div class="coming-soon">Coming Soon</div>';
+            potionContainer.innerHTML = '<div class="coming-soon">Coming Soon</div>';
+
+            const { data: recipes, error } = await supabase.from('kitchen_recipes').select('*');
+
+            if (error || !recipes || recipes.length === 0) {
+                return;
+            }
+
+            const foods = recipes.filter(r => r.category === 'food');
+            const potions = recipes.filter(r => r.category === 'potion');
+
+            if (foods.length > 0) {
+                foodContainer.innerHTML = '';
+                foods.forEach(r => foodContainer.appendChild(createRecipeCard(r)));
+            }
+
+            if (potions.length > 0) {
+                potionContainer.innerHTML = '';
+                potions.forEach(r => potionContainer.appendChild(createRecipeCard(r)));
+            }
+        }
+
+        function createRecipeCard(recipe) {
+            const card = document.createElement('div');
+            card.className = 'recipe-card';
+
+            const imgHtml = recipe.image_url 
+                ? `<img src="${recipe.image_url}" class="recipe-img">` 
+                : `<div class="recipe-img">🍳</div>`;
+
+            // แปลงส่วนผสมจาก JSONb เป็นข้อความแสดงผล
+            let ingredientsText = '';
+            if (recipe.ingredients && Array.isArray(recipe.ingredients)) {
+                ingredientsText = recipe.ingredients.map(ing => `• ${ing.name}: ${ing.qty} ชิ้น`).join('<br>');
+            } else {
+                ingredientsText = '• ไม่ระบุส่วนผสม';
+            }
+
+            card.innerHTML = `
+                <div class="recipe-header">
+                    ${imgHtml}
+                    <div class="recipe-info">
+                        <div class="recipe-name">${recipe.name}</div>
+                        <div class="recipe-details">
+                            เลเวลที่ต้องการ: ${recipe.required_level || 1} | เวลาทำ: ${recipe.craft_duration || 'ทันที'}<br>
+                            ${recipe.effect_description || ''}
+                        </div>
+                    </div>
+                </div>
+                <div class="ingredients-box">
+                    <div class="ingredients-title">ส่วนผสมที่ต้องใช้</div>
+                    ${ingredientsText}
+                </div>
+                <button type="button" class="cook-btn" onclick="craftRecipe('${recipe.id}')">ทำ${recipe.category === 'food' ? 'อาหาร' : 'ยา'}</button>
+            `;
+
+            return card;
+        }
+
+        window.craftRecipe = async function(recipeId) {
+            // ดึงข้อมูลสูตร
+            const { data: recipe } = await supabase.from('kitchen_recipes').select('*').eq('id', recipeId).maybeSingle();
+            if (!recipe) return;
+
+            // เช็คเลเวลผู้เล่น
+            if (currentProfile.level < (recipe.required_level || 1)) {
+                showPopup(`เลเวลของคุณยังไม่ถึงกำหนด (ต้องการเลเวล ${recipe.required_level}) ไม่สามารถทำเมนูนี้ได้`);
+                return;
+            }
+
+            // ดึงคลังไอเท็มของผู้เล่นมาตรวจสอบวัตถุดิบ
+            const { data: inventory } = await supabase.from('user_inventory').select('*').eq('user_id', currentUser.id);
+
+            // ตรวจสอบว่าวัตถุดิบเพียงพอหรือไม่
+            let missingItems = [];
+            for (const ing of recipe.ingredients) {
+                const userItem = inventory.find(i => i.item_name === ing.name);
+                const userQty = userItem ? Number(userItem.quantity) : 0;
+                if (userQty < Number(ing.qty)) {
+                    missingItems.push(`${ing.name} (ต้องการ ${ing.qty}, มี ${userQty})`);
+                }
+            }
+
+            if (missingItems.length > 0) {
+                showPopup(`วัตถุดิบไม่เพียงพอ:\n${missingItems.join('\n')}`);
+                return;
+            }
+
+            // หักวัตถุดิบออกจาก inventory ตามจริง
+            for (const ing of recipe.ingredients) {
+                const userItem = inventory.find(i => i.item_name === ing.name);
+                let newQty = Number(userItem.quantity) - Number(ing.qty);
+                if (newQty <= 0) {
+                    await supabase.from('user_inventory').delete().eq('id', userItem.id);
+                } else {
+                    await supabase.from('user_inventory').update({ quantity: newQty }).eq('id', userItem.id);
+                }
+            }
+
+            // เพิ่มผลลัพธ์ (อาหาร/ยา) เข้าคลัง user_inventory
+            const { data: existingResult } = await supabase.from('user_inventory')
+                .select('*')
+                .eq('user_id', currentUser.id)
+                .eq('item_name', recipe.name)
+                .maybeSingle();
+
+            if (existingResult) {
+                await supabase.from('user_inventory')
+                    .update({ quantity: Number(existingResult.quantity) + 1 })
+                    .eq('id', existingResult.id);
+            } else {
+                await supabase.from('user_inventory').insert({
+                    user_id: currentUser.id,
+                    item_name: recipe.name,
+                    item_type: recipe.category, // 'food' หรือ 'potion'
+                    quantity: 1,
+                    image_url: recipe.image_url,
+                    description: recipe.effect_description
+                });
+            }
+
+            showPopup(`ทำ "${recipe.name}" สำเร็จ!\nไอเท็มถูกส่งไปยังคลังเก็บของ (Inventory) แล้ว`, () => {
+                location.reload();
+            });
+        };
+    </script>
+</body>
+</html>
