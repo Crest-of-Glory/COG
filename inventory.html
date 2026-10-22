@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crest of Glory - คลังเก็บของ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0b0b0b;
+            --card-bg: #141414;
+            --text-primary: #ffffff;
+            --text-secondary: #888888;
+            --border-color: #262626;
+            --border-focus: #ffffff;
+            --accent-color: #ffffff;
+            --accent-hover: #e0e0e0;
+            --btn-text: #0b0b0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            padding-bottom: 40px;
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .back-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            border-color: var(--border-focus);
+        }
+
+        .page-title {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .section-heading {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* ตารางคลังไอเท็ม */
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .inventory-item-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            transition: border-color 0.2s;
+        }
+
+        .inventory-item-card:hover {
+            border-color: var(--border-focus);
+        }
+
+        .item-qty-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #262626;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        .item-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            background-color: #262626;
+            object-fit: cover;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: #555;
+        }
+
+        .item-name {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 2px;
+            color: #fff;
+        }
+
+        .item-desc {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            flex: 1;
+            line-height: 1.3;
+        }
+
+        .item-actions-box {
+            display: flex;
+            gap: 4px;
+            width: 100%;
+        }
+
+        .btn-inv {
+            flex: 1;
+            padding: 6px 2px;
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-inv:hover {
+            border-color: var(--border-focus);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .empty-inventory {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+
+        /* ป๊อปอัพแจ้งเตือน */
+        #popup-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1300;
+            padding: 20px;
+        }
+
+        .popup-content {
+            background: #141414;
+            border: 1px solid var(--border-color);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 360px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+        }
+
+        .popup-message {
+            font-size: 13px;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            line-height: 1.6;
+            white-space: pre-line;
+            text-align: left;
+            background: rgba(255,255,255,0.02);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .popup-btn {
+            padding: 10px 24px;
+            background: var(--accent-color);
+            color: var(--btn-text);
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        /* ป๊อปอัพเลือกเพื่อนเพื่อส่งไอเท็ม */
+        #friend-select-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1200;
+            padding: 20px;
+        }
+
+        .friend-list-box {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px;
+        }
+
+        .friend-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 12px;
+        }
+
+        .friend-row:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- แถบด้านบน -->
+        <div class="header-nav">
+            <a href="home.html" class="back-btn">กลับหน้าหลัก</a>
+            <h1 class="page-title">Inventory</h1>
+            <div style="width: 75px;"></div>
+        </div>
+
+        <!-- คลังเก็บของ -->
+        <div class="card">
+            <p class="section-heading">คลังไอเท็มส่วนตัว</p>
+            <div id="inventory-items-container">
+                <div class="empty-inventory">กระเป๋าของคุณว่างเปล่า</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ป๊อปอัพแจ้งเตือนทั่วไป -->
+    <div id="popup-modal">
+        <div class="popup-content">
+            <p class="popup-message" id="popup-text"></p>
+            <button class="popup-btn" id="popup-close-btn">ตกลง</button>
+        </div>
+    </div>
+
+    <!-- ป๊อปอัพเลือกเพื่อนสำหรับส่งของ -->
+    <div id="friend-select-modal">
+        <div class="popup-content" style="text-align: left;">
+            <p class="section-heading" style="margin-bottom: 10px; text-align: center;">เลือกเพื่อนที่จะส่งไอเท็ม</p>
+            <div class="friend-list-box" id="friend-select-container"></div>
+            <button class="popup-btn" onclick="document.getElementById('friend-select-modal').style.display='none'" style="background: #262626; color: #fff;">ยกเลิก</button>
+        </div>
+    </div>
+
+    <!-- Script ทำงานหน้าคลังเก็บของ -->
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+        const SUPABASE_URL = 'https://diyqqdqitldcwkcrjjme.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_XRBLBS50FT1HuIf1A50HCA_eLFwQFnW';
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentUser = null;
+        let currentProfile = null;
+        let selectedItemForSend = null;
+        let popupCallback = null;
+
+        function showPopup(message, callback = null) {
+            document.getElementById('popup-text').textContent = message;
+            document.getElementById('popup-modal').style.display = 'flex';
+            popupCallback = callback;
+        }
+
+        document.getElementById('popup-close-btn').addEventListener('click', () => {
+            document.getElementById('popup-modal').style.display = 'none';
+            if (popupCallback) {
+                popupCallback();
+                popupCallback = null;
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            const { data: { session }, error } = await supabase.auth.getSession();
+            if (error || !session) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            currentUser = session.user;
+            const { data: profile } = await supabase.from('profiles').select('*').eq('id', currentUser.id).maybeSingle();
+            currentProfile = profile;
+
+            await loadInventory();
+        });
+
+        async function loadInventory() {
+            const container = document.getElementById('inventory-items-container');
+            container.innerHTML = '';
+
+            const { data: items, error } = await supabase.from('user_inventory')
+                .select('*')
+                .eq('user_id', currentUser.id)
+                .order('item_name', { ascending: true });
+
+            if (error || !items || items.length === 0) {
+                container.innerHTML = '<div class="empty-inventory">กระเป๋าของคุณว่างเปล่า</div>';
+                return;
+            }
+
+            const grid = document.createElement('div');
+            grid.className = 'inventory-grid';
+
+            items.forEach(i => {
+                const card = document.createElement('div');
+                card.className = 'inventory-item-card';
+
+                const imgHtml = i.image_url 
+                    ? `<img src="${i.image_url}" class="item-img">` 
+                    : `<div class="item-img">📦</div>`;
+
+                card.innerHTML = `
+                    <div class="item-qty-badge">x${i.quantity}</div>
+                    ${imgHtml}
+                    <div class="item-name">${i.item_name}</div>
+                    <div class="item-desc">${i.description || 'ไม่มีรายละเอียด'}</div>
+                    <div class="item-actions-box">
+                        <button type="button" class="btn-inv" onclick="useItem('${i.id}', '${i.item_name}', '${i.item_type}')">กิน/ใช้</button>
+                        <button type="button" class="btn-inv" onclick="sellItem('${i.id}', '${i.item_name}')">ขาย</button>
+                        <button type="button" class="btn-inv" onclick="openSendModal('${i.id}', '${i.item_name}')">ส่ง</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            container.appendChild(grid);
+        }
+
+        // ฟังก์ชันใช้/กินไอเท็ม (อาหาร หรือ ยา)
+        window.useItem = async function(itemId, itemName, itemType) {
+            // โหลดข้อมูลโปรไฟล์ล่าสุดเพื่อเช็คสถานะหลอดพลังงาน, อาหาร, เลือด
+            const { data: profile } = await supabase.from('profiles').select('*').eq('id', currentUser.id).maybeSingle();
+            if (!profile) return;
+
+            if (itemType === 'food') {
+                if (Number(profile.food) >= Number(profile.max_food)) {
+                    showPopup('หลอดอาหารของคุณเต็มแล้ว ไม่สามารถกินเพิ่มได้');
+                    return;
+                }
+                let newFood = Math.min(Number(profile.max_food), Number(profile.food) + 25); // ฟื้นฟูหลอดอาหาร 25 หน่วย
+                await supabase.from('profiles').update({ food: newFood }).eq('id', currentUser.id);
+            } else if (itemType === 'potion') {
+                if (Number(profile.hp) >= Number(profile.max_hp)) {
+                    showPopup('หลอดเลือด HP ของคุณเต็มอยู่แล้ว ไม่จำเป็นต้องใช้ยา');
+                    return;
+                }
+                let newHp = Math.min(Number(profile.max_hp), Number(profile.hp) + 30); // ฟื้นฟู HP 30 หน่วย
+                await supabase.from('profiles').update({ hp: newHp }).eq('id', currentUser.id);
+            } else {
+                showPopup('ไอเท็มชิ้นนี้ไม่สามารถกินหรือใช้งานได้โดยตรง');
+                return;
+            }
+
+            // ลดจำนวนไอเท็มในกระเป๋าลง 1 ชิ้น
+            const { data: itemData } = await supabase.from('user_inventory').select('*').eq('id', itemId).maybeSingle();
+            if (itemData) {
+                if (itemData.quantity > 1) {
+                    await supabase.from('user_inventory').update({ quantity: itemData.quantity - 1 }).eq('id', itemId);
+                } else {
+                    await supabase.from('user_inventory').delete().eq('id', itemId);
+                }
+            }
+
+            showPopup(`ใช้งาน "${itemName}" สำเร็จ! ฟื้นฟูค่าสถานะเรียบร้อย`, () => loadInventory());
+        };
+
+        // ฟังก์ชันขายไอเท็ม (ทีละ 1 ชิ้น ได้ราคา 50%)
+        window.sellItem = async function(itemId, itemName) {
+            const { data: itemData } = await supabase.from('user_inventory').select('*').eq('id', itemId).maybeSingle();
+            if (!itemData) return;
+
+            // สมมติราคาขาย 50% (อิงราคาพื้นฐาน หรือคำนวณคร่าวๆ เช่น 1 Gold ต่อชิ้น หรือเทียบเท่า)
+            // เงินจะเข้าบัญชีธนาคารส่วนตัวเป็น Gold (หรือ Silver)
+            const { data: bank } = await supabase.from('bank_accounts').select('*').eq('id', currentUser.id).maybeSingle();
+            if (!bank) return;
+
+            let addGold = 0.50; // ขายได้ 0.5 Gold (50 Silver) ต่อชิ้น
+            let newGold = Number(bank.gold) + addGold;
+
+            await supabase.from('bank_accounts').update({ gold: newGold }).eq('id', currentUser.id);
+
+            // ลดจำนวนไอเท็มลง 1 ชิ้น
+            if (itemData.quantity > 1) {
+                await supabase.from('user_inventory').update({ quantity: itemData.quantity - 1 }).eq('id', itemId);
+            } else {
+                await supabase.from('user_inventory').delete().eq('id', itemId);
+            }
+
+            showPopup(`ขาย "${itemName}" (x1) สำเร็จ ได้รับเงิน ${addGold} Gold เข้าบัญชีธนาคาร`, () => loadInventory());
+        };
+
+        // เปิดป๊อปอัพเลือกเพื่อนเพื่อส่งของ
+        window.openSendModal = async function(itemId, itemName) {
+            selectedItemForSend = itemId;
+            const container = document.getElementById('friend-select-container');
+            container.innerHTML = '';
+
+            // ดึงรายชื่อเพื่อนที่เป็นเพื่อนกันแล้ว (status = 'accepted')
+            const { data: friendships } = await supabase.from('friendships')
+                .select('*')
+                .eq('status', 'accepted')
+                .or(`user_id.eq.${currentUser.id},friend_id.eq.${currentUser.id}`);
+
+            if (!friendships || friendships.length === 0) {
+                container.innerHTML = '<div style="text-align:center; padding:10px; font-size:12px; color:var(--text-secondary);">คุณยังไม่มีเพื่อนสำหรับส่งไอเท็ม</div>';
+                document.getElementById('friend-select-modal').style.display = 'flex';
+                return;
+            }
+
+            const friendIds = friendships.map(f => f.user_id === currentUser.id ? f.friend_id : f.user_id);
+            const { data: friends } = await supabase.from('profiles').select('*').in('id', friendIds);
+
+            if (!friends || friends.length === 0) {
+                container.innerHTML = '<div style="text-align:center; padding:10px; font-size:12px; color:var(--text-secondary);">คุณยังไม่มีเพื่อนสำหรับส่งไอเท็ม</div>';
+                document.getElementById('friend-select-modal').style.display = 'flex';
+                return;
+            }
+
+            friends.forEach(f => {
+                const row = document.createElement('div');
+                row.className = 'friend-row';
+                row.innerHTML = `
+                    <span><strong>${f.name}</strong> (@${f.username})</span>
+                    <button type="button" class="btn-inv" style="padding: 4px 10px;" onclick="executeSendItem('${f.id}')">ส่ง</button>
+                `;
+                container.appendChild(row);
+            });
+
+            document.getElementById('friend-select-modal').style.display = 'flex';
+        };
+
+        // ยืนยันการส่งไอเท็มให้เพื่อนทีละ 1 ชิ้น
+        window.executeSendItem = async function(receiverId) {
+            document.getElementById('friend-select-modal').style.display = 'none';
+
+            const { data: itemData } = await supabase.from('user_inventory').select('*').eq('id', selectedItemForSend).maybeSingle();
+            if (!itemData || itemData.quantity <= 0) {
+                showPopup('ไอเท็มชิ้นนี้หมดแล้ว');
+                return;
+            }
+
+            // ลดจำนวนไอเท็มของผู้ส่งลง 1 ชิ้น
+            if (itemData.quantity > 1) {
+                await supabase.from('user_inventory').update({ quantity: itemData.quantity - 1 }).eq('id', selectedItemForSend);
+            } else {
+                await supabase.from('user_inventory').delete().eq('id', selectedItemForSend);
+            }
+
+            // เพิ่มไอเท็มให้ฝั่งผู้รับ (หรือรวมจำนวนถ้ามีชิ้นเดิมอยู่แล้ว)
+            const { data: receiverItem } = await supabase.from('user_inventory')
+                .select('*')
+                .eq('user_id', receiverId)
+                .eq('item_name', itemData.item_name)
+                .maybeSingle();
+
+            if (receiverItem) {
+                await supabase.from('user_inventory')
+                    .update({ quantity: Number(receiverItem.quantity) + 1 })
+                    .eq('id', receiverItem.id);
+            } else {
+                await supabase.from('user_inventory').insert({
+                    user_id: receiverId,
+                    item_name: itemData.item_name,
+                    item_type: itemData.item_type,
+                    quantity: 1,
+                    image_url: itemData.image_url,
+                    description: itemData.description
+                });
+            }
+
+            showPopup('ส่งไอเท็มให้เพื่อนเรียบร้อยแล้ว!', () => loadInventory());
+        };
+    </script>
+</body>
+</html>
