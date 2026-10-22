@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crest of Glory - ธนาคารส่วนตัว</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0b0b0b;
+            --card-bg: #141414;
+            --card-hover: #1c1c1c;
+            --text-primary: #ffffff;
+            --text-secondary: #888888;
+            --border-color: #262626;
+            --border-focus: #ffffff;
+            --accent-color: #ffffff;
+            --accent-hover: #e0e0e0;
+            --btn-text: #0b0b0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            padding-bottom: 40px;
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .back-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            border-color: var(--border-focus);
+        }
+
+        .page-title {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* การ์ดข้อมูลบัญชีหลัก */
+        .account-card {
+            background: linear-gradient(135deg, #1a1a1a 0%, #111111 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .account-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 4px; height: 100%;
+            background-color: var(--text-primary);
+        }
+
+        .account-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .account-name-group {
+            flex-grow: 1;
+            margin-right: 15px;
+        }
+
+        .account-name-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-size: 18px;
+            font-weight: 700;
+            padding: 2px 0;
+            border-bottom: 1px dashed var(--border-color);
+            transition: border-color 0.3s;
+        }
+
+        .account-name-input:focus {
+            outline: none;
+            border-bottom-color: var(--border-focus);
+        }
+
+        .account-right-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+        }
+
+        .account-number-badge {
+            font-size: 12px;
+            color: var(--text-secondary);
+            background: rgba(255,255,255,0.05);
+            padding: 4px 10px;
+            border-radius: 20px;
+            letter-spacing: 1px;
+            border: 1px solid var(--border-color);
+        }
+
+        .save-acc-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .save-acc-btn:hover {
+            background: var(--text-primary);
+            color: var(--btn-text);
+        }
+
+        .balance-section {
+            border-top: 1px solid var(--border-color);
+            padding-top: 15px;
+        }
+
+        .balance-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .balance-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* แท็บเมนูสลับการใช้งาน */
+        .tab-menu {
+            display: flex;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 4px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tab-btn.active {
+            background-color: var(--text-primary);
+            color: var(--btn-text);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .section-heading {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 14px;
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--border-focus);
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--accent-color);
+            color: var(--btn-text);
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background-color 0.3s;
+        }
+
+        .action-btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .contact-list {
+            max-height: 220px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+
+        .contact-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 14px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .contact-item:hover {
+            border-color: var(--border-focus);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .contact-info strong {
+            display: block;
+            font-size: 13px;
+            margin-bottom: 2px;
+        }
+
+        .contact-info span {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .delete-contact {
+            background: none;
+            border: none;
+            color: #ff5555;
+            font-size: 12px;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+
+        .delete-contact:hover {
+            background: rgba(255, 85, 85, 0.1);
+        }
+
+        /* ป๊อปอัพแจ้งเตือนและสลิป */
+        #popup-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .popup-content {
+            background: #141414;
+            border: 1px solid var(--border-color);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 360px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .popup-message {
+            font-size: 13px;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            line-height: 1.6;
+            white-space: pre-line;
+            text-align: left;
+            background: rgba(255,255,255,0.02);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .popup-btn {
+            padding: 10px 24px;
+            background: var(--accent-color);
+            color: var(--btn-text);
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- แถบด้านบน -->
+        <div class="header-nav">
+            <a href="home.html" class="back-btn">กลับหน้าหลัก</a>
+            <h1 class="page-title">Bank</h1>
+            <div style="width: 75px;"></div>
+        </div>
+
+        <!-- 1. การ์ดแสดงข้อมูลบัญชีส่วนตัว -->
+        <div class="account-card">
+            <div class="account-top">
+                <div class="account-name-group">
+                    <span class="balance-label">ชื่อบัญชี</span>
+                    <input type="text" id="account-name-input" class="account-name-input" placeholder="ชื่อบัญชี">
+                </div>
+                <div class="account-right-group">
+                    <div class="account-number-badge" id="account-number-display">--------</div>
+                    <button type="button" class="save-acc-btn" id="save-name-btn">บันทึกชื่อ</button>
+                </div>
+            </div>
+            <div class="balance-section">
+                <p class="balance-label">ยอดเงินคงเหลือ</p>
+                <h2 class="balance-value" id="account-balance">0 Gold</h2>
+            </div>
+        </div>
+
+        <!-- 2. เมนูแท็บสลับฟังก์ชันการใช้งาน -->
+        <div class="tab-menu">
+            <button type="button" class="tab-btn active" onclick="switchTab('transfer')">โอนเงิน</button>
+            <button type="button" class="tab-btn" onclick="switchTab('contacts')">รายชื่อผู้ติดต่อ</button>
+        </div>
+
+        <!-- หมวดที่ 1: โอนเงิน (Transfer) -->
+        <div id="tab-transfer" class="tab-content active">
+            <div class="card" style="margin-bottom: 0;">
+                <p class="section-heading">ทำรายการโอนเงิน</p>
+                <form id="transfer-form">
+                    <div class="form-group">
+                        <label for="receiver-account">เลขบัญชีผู้รับ (10 หลัก)</label>
+                        <input type="text" id="receiver-account" maxlength="10" placeholder="กรอกเลขบัญชี 10 หลัก" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="transfer-amount">จำนวนเงิน (Gold)</label>
+                        <input type="number" step="0.01" min="0.01" id="transfer-amount" placeholder="0.00" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="transfer-note">หมายเหตุ (ถ้ามี)</label>
+                        <input type="text" id="transfer-note" placeholder="ระบุบันทึกช่วยจำ...">
+                    </div>
+                    <button type="submit" class="action-btn">ยืนยันการโอนเงิน</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- หมวดที่ 2: รายชื่อผู้ติดต่อ (Contacts) -->
+        <div id="tab-contacts" class="tab-content">
+            <div class="card" style="margin-bottom: 0;">
+                <p class="section-heading">เพิ่มรายชื่อผู้ติดต่อ</p>
+                <form id="contact-form" style="margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;">
+                    <div class="form-group">
+                        <label for="contact-name">ชื่อผู้รับ (ที่จำง่าย)</label>
+                        <input type="text" id="contact-name" placeholder="เช่น เพื่อนซี้, กิลด์มาสเตอร์" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-number">เลขบัญชีผู้รับ (10 หลัก)</label>
+                        <input type="text" id="contact-number" maxlength="10" placeholder="เลขบัญชี 10 หลัก" required>
+                    </div>
+                    <button type="submit" class="action-btn">บันทึกรายชื่อ</button>
+                </form>
+
+                <p class="section-heading" style="margin-bottom: 10px;">สมุดรายชื่อผู้ติดต่อ</p>
+                <div class="contact-list" id="contact-list-container">
+                    <!-- รายชื่อจะแสดงที่นี่ -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ป๊อปอัพแจ้งเตือนและสลิป -->
+    <div id="popup-modal">
+        <div class="popup-content">
+            <p class="popup-message" id="popup-text"></p>
+            <button class="popup-btn" id="popup-close-btn">ตกลง</button>
+        </div>
+    </div>
+
+    <!-- Script ทำงานระบบ Bank -->
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+        const SUPABASE_URL = 'https://diyqqdqitldcwkcrjjme.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_XRBLBS50FT1HuIf1A50HCA_eLFwQFnW';
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentUser = null;
+        let currentBank = null;
+        let popupCallback = null;
+
+        function showPopup(message, callback = null) {
+            document.getElementById('popup-text').textContent = message;
+            document.getElementById('popup-modal').style.display = 'flex';
+            popupCallback = callback;
+        }
+
+        document.getElementById('popup-close-btn').addEventListener('click', () => {
+            document.getElementById('popup-modal').style.display = 'none';
+            if (popupCallback) {
+                popupCallback();
+                popupCallback = null;
+            }
+        });
+
+        window.switchTab = function(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            if (tabName === 'transfer') {
+                document.querySelectorAll('.tab-btn')[0].classList.add('active');
+                document.getElementById('tab-transfer').classList.add('active');
+            } else {
+                document.querySelectorAll('.tab-btn')[1].classList.add('active');
+                document.getElementById('tab-contacts').classList.add('active');
+            }
+        };
+
+        // ฟังก์ชันจัดรูปแบบตัวเลขใส่ลูกน้ำ (Comma) และแปลงหน่วย Gold ตามเงื่อนไข
+        function formatGold(goldVal, silverVal) {
+            const totalGold = Number(goldVal || 0) + (Number(silverVal || 0) / 100);
+            if (totalGold === 0) return '0 Gold';
+            
+            if (totalGold % 1 === 0) {
+                return `${totalGold.toLocaleString('en-US')} Gold`;
+            } else {
+                return `${totalGold.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Gold`;
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            const { data: { session }, error } = await supabase.auth.getSession();
+            if (error || !session) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            currentUser = session.user;
+            await loadBankData();
+            await loadContacts();
+
+            document.getElementById('save-name-btn').addEventListener('click', async () => {
+                const newName = document.getElementById('account-name-input').value.trim();
+                const { error: updateErr } = await supabase
+                    .from('bank_accounts')
+                    .update({ account_name: newName })
+                    .eq('id', currentUser.id);
+
+                if (updateErr) {
+                    showPopup('บันทึกชื่อบัญชีไม่สำเร็จ: ' + updateErr.message);
+                } else {
+                    showPopup('บันทึกชื่อบัญชีเรียบร้อยแล้ว');
+                }
+            });
+
+            document.getElementById('transfer-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const receiverAcc = document.getElementById('receiver-account').value.trim();
+                const amount = parseFloat(document.getElementById('transfer-amount').value);
+                const note = document.getElementById('transfer-note').value.trim();
+
+                if (receiverAcc === currentBank.account_number) {
+                    showPopup('ไม่สามารถโอนเงินเข้าบัญชีตัวเองได้');
+                    return;
+                }
+
+                // คำนวณยอดเงินรวมปัจจุบันของผู้โอน (Gold + Silver/100)
+                const senderGold = Number(currentBank.gold || 0);
+                const senderSilver = Number(currentBank.silver || 0);
+                const totalSenderVal = senderGold + (senderSilver / 100);
+
+                if (totalSenderVal < amount) {
+                    showPopup(`ยอดเงินในบัญชีไม่พอ! คุณมี ${formatGold(senderGold, senderSilver)}`);
+                    return;
+                }
+
+                const { data: receiverBank, error: recErr } = await supabase
+                    .from('bank_accounts')
+                    .select('*')
+                    .eq('account_number', receiverAcc)
+                    .maybeSingle();
+
+                if (recErr || !receiverBank) {
+                    showPopup('ไม่พบเลขบัญชีปลายทางนี้ในระบบ');
+                    return;
+                }
+
+                const { data: receiverProf } = await supabase.from('profiles').select('name').eq('id', receiverBank.id).maybeSingle();
+                const { data: senderProf } = await supabase.from('profiles').select('name').eq('id', currentUser.id).maybeSingle();
+
+                // ดึงชื่อบัญชีมาแสดงในสลิป (ถ้าไม่มีชื่อบัญชี ให้ใช้ชื่อตัวละคร)
+                const receiverName = receiverBank.account_name || receiverProf?.name || 'ไม่ระบุชื่อ';
+                const senderName = currentBank.account_name || senderProf?.name || 'ไม่ระบุชื่อ';
+
+                // คำนวณยอดเงินใหม่ของผู้โอน (ป้องกันเศษทองหาย)
+                const newSenderTotalVal = totalSenderVal - amount;
+                const newSenderGold = Math.floor(newSenderTotalVal);
+                const newSenderSilver = Math.round((newSenderTotalVal - newSenderGold) * 100);
+
+                // คำนวณยอดเงินใหม่ของผู้รับ
+                const receiverGold = Number(receiverBank.gold || 0);
+                const receiverSilver = Number(receiverBank.silver || 0);
+                const totalReceiverVal = receiverGold + (receiverSilver / 100) + amount;
+                const newReceiverGold = Math.floor(totalReceiverVal);
+                const newReceiverSilver = Math.round((totalReceiverVal - newReceiverGold) * 100);
+
+                // 1. หักเงินผู้โอนก่อน
+                const { error: sendUpdateErr } = await supabase
+                    .from('bank_accounts')
+                    .update({ gold: newSenderGold, silver: newSenderSilver })
+                    .eq('id', currentUser.id);
+
+                if (sendUpdateErr) {
+                    showPopup('การโอนเงินล้มเหลว (เกิดข้อผิดพลาดในการหักเงิน)');
+                    return;
+                }
+
+                // 2. บวกเงินให้ผู้รับ
+                const { error: recvUpdateErr } = await supabase
+                    .from('bank_accounts')
+                    .update({ gold: newReceiverGold, silver: newReceiverSilver })
+                    .eq('id', receiverBank.id);
+
+                if (recvUpdateErr) {
+                    // กรณีบวกเงินผู้รับไม่สำเร็จ คืนเงินให้ผู้โอนทันที (Rollback) ป้องกันเงินหาย
+                    await supabase
+                        .from('bank_accounts')
+                        .update({ gold: senderGold, silver: senderSilver })
+                        .eq('id', currentUser.id);
+
+                    showPopup('การโอนเงินล้มเหลว ระบบได้คืนเงินให้คุณเรียบร้อยแล้ว');
+                    return;
+                }
+
+                const now = new Date();
+                const dateTimeStr = now.toISOString().replace('T', ' ').substring(0, 19);
+
+                await supabase.from('transactions').insert({
+                    sender_id: currentUser.id,
+                    sender_name: senderName,
+                    sender_account: currentBank.account_number,
+                    receiver_id: receiverBank.id,
+                    receiver_name: receiverName,
+                    receiver_account: receiverAcc,
+                    amount: amount,
+                    currency: 'Gold',
+                    note: note
+                });
+
+                await loadBankData();
+                document.getElementById('transfer-form').reset();
+
+                const formattedAmount = amount % 1 === 0 ? amount.toLocaleString('en-US') : amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+                const slipText = `===== 🧾 สลิปโอนเงิน (TRANSACTION SLIP) =====
+📅 วันที่/เวลา: ${dateTimeStr} (UTC)
+--------------------------------------------------
+📤 ผู้โอน: ${senderName}
+💳 เลขบัญชีผู้โอน: ${currentBank.account_number}
+--------------------------------------------------
+📥 ผู้รับ: ${receiverName}
+💳 เลขบัญชีผู้รับ: ${receiverAcc}
+--------------------------------------------------
+💰 จำนวนเงิน: ${formattedAmount} Gold
+📝 หมายเหตุ: ${note || '-'}
+--------------------------------------------------`;
+
+                showPopup(`โอนเงินสำเร็จ!\n\n` + slipText);
+            });
+
+            document.getElementById('contact-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const cName = document.getElementById('contact-name').value.trim();
+                const cNum = document.getElementById('contact-number').value.trim();
+
+                const { error: insErr } = await supabase.from('bank_contacts').insert({
+                    user_id: currentUser.id,
+                    contact_name: cName,
+                    contact_account_number: cNum
+                });
+
+                if (insErr) {
+                    showPopup('เพิ่มรายชื่อไม่สำเร็จ: ' + insErr.message);
+                } else {
+                    showPopup('เพิ่มรายชื่อผู้ติดต่อเรียบร้อยแล้ว');
+                    document.getElementById('contact-form').reset();
+                    await loadContacts();
+                }
+            });
+        });
+
+        async function loadBankData() {
+            const { data: bank, error } = await supabase
+                .from('bank_accounts')
+                .select('*')
+                .eq('id', currentUser.id)
+                .maybeSingle();
+
+            if (error || !bank) {
+                showPopup('ไม่พบข้อมูลบัญชีธนาคาร');
+                return;
+            }
+
+            currentBank = bank;
+            document.getElementById('account-name-input').value = bank.account_name || '';
+            document.getElementById('account-number-display').textContent = bank.account_number || '----------';
+            document.getElementById('account-balance').textContent = formatGold(bank.gold, bank.silver);
+        }
+
+        async function loadContacts() {
+            const { data: contacts, error } = await supabase
+                .from('bank_contacts')
+                .select('*')
+                .eq('user_id', currentUser.id);
+
+            const container = document.getElementById('contact-list-container');
+            container.innerHTML = '';
+
+            if (error || !contacts || contacts.length === 0) {
+                container.innerHTML = '<p style="font-size:12px; color:var(--text-secondary); text-align:center; padding:10px;">ยังไม่มีรายชื่อผู้ติดต่อในระบบ</p>';
+                return;
+            }
+
+            contacts.forEach(c => {
+                const item = document.createElement('div');
+                item.className = 'contact-item';
+                item.innerHTML = `
+                    <div class="contact-info" onclick="selectContact('${c.contact_account_number}')" style="flex-grow: 1;">
+                        <strong>${c.contact_name}</strong>
+                        <span>เลขบัญชี: ${c.contact_account_number} (คลิกเพื่อเลือกโอน)</span>
+                    </div>
+                    <button type="button" class="delete-contact" onclick="deleteContact(event, '${c.id}')">ลบ</button>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        window.selectContact = function(accNum) {
+            document.getElementById('receiver-account').value = accNum;
+            switchTab('transfer');
+        };
+
+        window.deleteContact = async function(event, contactId) {
+            event.stopPropagation();
+            const { error } = await supabase.from('bank_contacts').delete().eq('id', contactId);
+            if (!error) {
+                await loadContacts();
+            }
+        };
+    </script>
+</body>
+</html>
