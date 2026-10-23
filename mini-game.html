@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crest of Glory - มินิเกม</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0b0b0b;
+            --card-bg: #141414;
+            --text-primary: #ffffff;
+            --text-secondary: #888888;
+            --border-color: #262626;
+            --border-focus: #ffffff;
+            --accent-color: #ffffff;
+            --accent-hover: #e0e0e0;
+            --btn-text: #0b0b0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            padding-bottom: 40px;
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+
+        .back-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .back-btn:hover {
+            border-color: var(--border-focus);
+        }
+
+        .page-title {
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .section-heading {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .game-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            transition: border-color 0.2s;
+        }
+
+        .game-card:hover {
+            border-color: var(--border-focus);
+        }
+
+        .game-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            flex: 1;
+        }
+
+        .game-btn-box {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-game {
+            padding: 8px 12px;
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-game:hover {
+            border-color: var(--border-focus);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .btn-game.primary {
+            background: var(--text-primary);
+            color: var(--btn-text);
+            border: none;
+        }
+
+        .btn-game.primary:hover {
+            background: var(--accent-hover);
+        }
+
+        /* ป๊อปอัพห้องเกม / แจ้งเตือน */
+        #popup-modal, #room-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1300;
+            padding: 20px;
+        }
+
+        .popup-content {
+            background: #141414;
+            border: 1px solid var(--border-color);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 360px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+        }
+
+        .popup-message {
+            font-size: 13px;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            line-height: 1.6;
+            white-space: pre-line;
+            text-align: left;
+            background: rgba(255,255,255,0.02);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .popup-btn {
+            padding: 10px 24px;
+            background: var(--accent-color);
+            color: var(--btn-text);
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px 14px;
+            background-color: #1a1a1a !important;
+            border: 1px solid var(--border-color);
+            border-radius: 8px !important;
+            color: var(--text-primary) !important;
+            font-size: 14px;
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- แถบด้านบน -->
+        <div class="header-nav">
+            <a href="home.html" class="back-btn">กลับหน้าหลัก</a>
+            <h1 class="page-title">Mini Games</h1>
+        </div>
+
+        <!-- รายการมินิเกม (แสดงเฉพาะชื่อเกมและปุ่มสร้าง/เข้าร่วม) -->
+        <div class="card">
+            <p class="section-heading">เลือกเกมดวลกับผู้เล่น</p>
+            
+            <!-- เกมที่ 1: Code Breaker -->
+            <div class="game-card">
+                <div class="game-name">Code Breaker</div>
+                <div class="game-btn-box">
+                    <button type="button" class="btn-game primary" onclick="openRoomModal('Code Breaker', true, 'game-codebreaker.html')">สร้างห้อง</button>
+                    <button type="button" class="btn-game" onclick="openRoomModal('Code Breaker', false, 'game-codebreaker.html')">เข้าร่วม</button>
+                </div>
+            </div>
+
+            <!-- เกมที่ 2: Tap Duel -->
+            <div class="game-card">
+                <div class="game-name">Tap Duel</div>
+                <div class="game-btn-box">
+                    <button type="button" class="btn-game primary" onclick="openRoomModal('Tap Duel', true, 'game-tapduel.html')">สร้างห้อง</button>
+                    <button type="button" class="btn-game" onclick="openRoomModal('Tap Duel', false, 'game-tapduel.html')">เข้าร่วม</button>
+                </div>
+            </div>
+
+            <!-- เกมที่ 3: Shadow Pairs -->
+            <div class="game-card">
+                <div class="game-name">Shadow Pairs</div>
+                <div class="game-btn-box">
+                    <button type="button" class="btn-game primary" onclick="openRoomModal('Shadow Pairs', true, 'game-shadowpairs.html')">สร้างห้อง</button>
+                    <button type="button" class="btn-game" onclick="openRoomModal('Shadow Pairs', false, 'game-shadowpairs.html')">เข้าร่วม</button>
+                </div>
+            </div>
+
+            <!-- เกมที่ 4: Elemental Clash -->
+            <div class="game-card">
+                <div class="game-name">Elemental Clash</div>
+                <div class="game-btn-box">
+                    <button type="button" class="btn-game primary" onclick="openRoomModal('Elemental Clash', true, 'game-elemental.html')">สร้างห้อง</button>
+                    <button type="button" class="btn-game" onclick="openRoomModal('Elemental Clash', false, 'game-elemental.html')">เข้าร่วม</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ป๊อปอัพสร้าง/เข้าร่วมห้อง -->
+    <div id="room-modal">
+        <div class="popup-content">
+            <p class="section-heading" id="modal-game-title" style="margin-bottom: 15px; text-align: center;">สร้างห้องเกม</p>
+            <div class="form-group" id="bet-input-box" style="display: none;">
+                <label>จำนวนเงินเดิมพัน (Gold)</label>
+                <input type="number" id="room-bet-amount" placeholder="ระบุจำนวน Gold..." min="1">
+            </div>
+            <div class="form-group">
+                <label id="room-code-label">รหัสห้อง (4 หลัก)</label>
+                <input type="text" id="room-code-input" maxlength="4" placeholder="กรอกรหัส 4 หลัก...">
+            </div>
+            <button type="button" class="popup-btn" onclick="confirmAndEnterGame()">ยืนยันเข้าสู่เกม</button>
+            <button type="button" class="popup-btn" onclick="document.getElementById('room-modal').style.display='none'" style="background: #262626; color: #fff; margin-top: 8px;">ยกเลิก</button>
+        </div>
+    </div>
+
+    <!-- ป๊อปอัพแจ้งเตือนทั่วไป -->
+    <div id="popup-modal">
+        <div class="popup-content">
+            <p class="popup-message" id="popup-text"></p>
+            <button class="popup-btn" id="popup-close-btn">ตกลง</button>
+        </div>
+    </div>
+
+    <!-- Script ควบคุมห้องเกมและส่งต่อไปยังไฟล์เกมแยก -->
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+        const SUPABASE_URL = 'https://diyqqdqitldcwkcrjjme.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_XRBLBS50FT1HuIf1A50HCA_eLFwQFnW';
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentUser = null;
+        let selectedGameName = '';
+        let targetGameFile = '';
+        let isCreating = false;
+        let popupCallback = null;
+
+        function showPopup(message, callback = null) {
+            document.getElementById('popup-text').textContent = message;
+            document.getElementById('popup-modal').style.display = 'flex';
+            popupCallback = callback;
+        }
+
+        document.getElementById('popup-close-btn').addEventListener('click', () => {
+            document.getElementById('popup-modal').style.display = 'none';
+            if (popupCallback) {
+                popupCallback();
+                popupCallback = null;
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            const { data: { session }, error } = await supabase.auth.getSession();
+            if (error || !session) {
+                window.location.href = 'index.html';
+                return;
+            }
+            currentUser = session.user;
+        });
+
+        window.openRoomModal = function(gameName, isCreate, gameFile) {
+            selectedGameName = gameName;
+            isCreating = isCreate;
+            targetGameFile = gameFile;
+
+            document.getElementById('modal-game-title').textContent = isCreate ? `สร้างห้อง: ${gameName}` : `เข้าร่วมห้อง: ${gameName}`;
+            document.getElementById('room-code-input').value = '';
+
+            if (gameName === 'Shadow Pairs' && isCreate) {
+                document.getElementById('bet-input-box').style.display = 'block';
+                document.getElementById('room-bet-amount').value = '';
+            } else {
+                document.getElementById('bet-input-box').style.display = 'none';
+            }
+
+            document.getElementById('room-modal').style.display = 'flex';
+        };
+
+        window.confirmAndEnterGame = function() {
+            const code = document.getElementById('room-code-input').value.trim();
+            if (code.length !== 4) {
+                showPopup('กรุณากรอกรหัสห้อง 4 หลักให้ถูกต้อง');
+                return;
+            }
+
+            let betAmount = 0;
+            if (selectedGameName === 'Shadow Pairs' && isCreating) {
+                betAmount = Number(document.getElementById('room-bet-amount').value) || 0;
+                if (betAmount <= 0) {
+                    showPopup('กรุณาระบุจำนวนเงินเดิมพันให้ถูกต้อง');
+                    return;
+                }
+            }
+
+            document.getElementById('room-modal').style.display = 'none';
+
+            const params = new URLSearchParams({
+                room: code,
+                mode: isCreating ? 'create' : 'join',
+                bet: betAmount
+            });
+
+            window.location.href = `${targetGameFile}?${params.toString()}`;
+        };
+    </script>
+</body>
+</html>
