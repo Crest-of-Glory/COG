@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crest of Glory - ระบบแอดมิน</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0b0b0b;
+            --card-bg: #141414;
+            --text-primary: #ffffff;
+            --text-secondary: #888888;
+            --border-color: #262626;
+            --border-focus: #ffffff;
+            --accent-color: #ffffff;
+            --accent-hover: #e0e0e0;
+            --btn-text: #0b0b0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            padding-bottom: 40px;
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 24px;
+            gap: 15px;
+        }
+
+        .back-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .back-btn:hover {
+            border-color: var(--border-focus);
+        }
+
+        .page-title {
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .section-heading {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* เมนูปุ่มการ์ดขนาดใหญ่ */
+        .admin-menu-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .admin-card-btn {
+            display: flex;
+            align-items: center;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 20px;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        .admin-card-btn:hover {
+            border-color: var(--border-focus);
+            background-color: #1a1a1a;
+            transform: translateY(-2px);
+        }
+
+        .admin-card-icon {
+            font-size: 28px;
+            margin-right: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            flex-shrink: 0;
+        }
+
+        .admin-card-info {
+            flex: 1;
+        }
+
+        .admin-card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .admin-card-desc {
+            font-size: 11px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .admin-card-arrow {
+            font-size: 18px;
+            color: var(--text-secondary);
+            margin-left: 10px;
+            transition: transform 0.2s;
+        }
+
+        .admin-card-btn:hover .admin-card-arrow {
+            color: #fff;
+            transform: translateX(3px);
+        }
+
+        /* ป๊อปอัพแจ้งเตือน */
+        #popup-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1300;
+            padding: 20px;
+        }
+
+        .popup-content {
+            background: #141414;
+            border: 1px solid var(--border-color);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 360px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+        }
+
+        .popup-message {
+            font-size: 13px;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            line-height: 1.6;
+            white-space: pre-line;
+            text-align: left;
+            background: rgba(255,255,255,0.02);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .popup-btn {
+            padding: 10px 24px;
+            background: var(--accent-color);
+            color: var(--btn-text);
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- แถบด้านบน -->
+        <div class="header-nav">
+            <a href="home.html" class="back-btn">กลับหน้าหลัก</a>
+            <h1 class="page-title">Admin Dashboard</h1>
+        </div>
+
+        <p class="section-heading">เมนูควบคุมระบบแอดมิน</p>
+
+        <!-- รายการเมนูการ์ดขนาดใหญ่ -->
+        <div class="admin-menu-list">
+            <a href="admin-store.html" class="admin-card-btn">
+                <div class="admin-card-icon">🛍️</div>
+                <div class="admin-card-info">
+                    <div class="admin-card-title">จัดการ Store (ร้านค้า)</div>
+                    <div class="admin-card-desc">เพิ่ม, แก้ไข หรือลบสินค้าและไอเท็มในร้านค้าทั่วไป</div>
+                </div>
+                <div class="admin-card-arrow">➔</div>
+            </a>
+
+            <a href="admin-kitchen.html" class="admin-card-btn">
+                <div class="admin-card-icon">🍳</div>
+                <div class="admin-card-info">
+                    <div class="admin-card-title">จัดการ Kitchen (ห้องครัว)</div>
+                    <div class="admin-card-desc">กำหนดสูตรอาหารและยา วัตถุดิบ ระยะเวลา และเลเวลขั้นต่ำ</div>
+                </div>
+                <div class="admin-card-arrow">➔</div>
+            </a>
+
+            <a href="admin-code.html" class="admin-card-btn">
+                <div class="admin-card-icon">🎁</div>
+                <div class="admin-card-info">
+                    <div class="admin-card-title">จัดการ Code (โค้ดของขวัญ)</div>
+                    <div class="admin-card-desc">สร้างหรือลบโค้ดแจกไอเท็มและเงินรางวัลให้แก่ผู้เล่น</div>
+                </div>
+                <div class="admin-card-arrow">➔</div>
+            </a>
+
+            <a href="admin-guild.html" class="admin-card-btn">
+                <div class="admin-card-icon">🛡️</div>
+                <div class="admin-card-info">
+                    <div class="admin-card-title">ภาพรวม Guild (กิลด์ทั้งหมด)</div>
+                    <div class="admin-card-desc">ตรวจสอบรายชื่อ เลเวล และสมาชิกของทุกกิลด์ในระบบ</div>
+                </div>
+                <div class="admin-card-arrow">➔</div>
+            </a>
+
+            <a href="admin-quests.html" class="admin-card-btn">
+                <div class="admin-card-icon">📜</div>
+                <div class="admin-card-info">
+                    <div class="admin-card-title">จัดการ Quests (ภารกิจ)</div>
+                    <div class="admin-card-desc">สร้างและจัดการภารกิจส่วนตัวของผู้เล่นและภารกิจกิลด์</div>
+                </div>
+                <div class="admin-card-arrow">➔</div>
+            </a>
+        </div>
+    </div>
+
+    <!-- ป๊อปอัพแจ้งเตือน -->
+    <div id="popup-modal">
+        <div class="popup-content">
+            <p class="popup-message" id="popup-text"></p>
+            <button class="popup-btn" id="popup-close-btn">ตกลง</button>
+        </div>
+    </div>
+
+    <!-- Script ตรวจสอบสิทธิ์แอดมิน -->
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+        const SUPABASE_URL = 'https://diyqqdqitldcwkcrjjme.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_XRBLBS50FT1HuIf1A50HCA_eLFwQFnW';
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let popupCallback = null;
+
+        function showPopup(message, callback = null) {
+            document.getElementById('popup-text').textContent = message;
+            document.getElementById('popup-modal').style.display = 'flex';
+            popupCallback = callback;
+        }
+
+        document.getElementById('popup-close-btn').addEventListener('click', () => {
+            document.getElementById('popup-modal').style.display = 'none';
+            if (popupCallback) {
+                popupCallback();
+                popupCallback = null;
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            const { data: { session }, error } = await supabase.auth.getSession();
+            if (error || !session) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            const { data: profile } = await supabase.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle();
+
+            if (!profile || !profile.is_admin) {
+                showPopup('คุณไม่มีสิทธิ์เข้าถึงหน้าผู้ดูแลระบบ (Admin Only)', () => {
+                    window.location.href = 'home.html';
+                });
+            }
+        });
+    </script>
+</body>
+</html>
