@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crest of Glory - จัดการโค้ดของขวัญ (Admin)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0b0b0b;
+            --card-bg: #141414;
+            --text-primary: #ffffff;
+            --text-secondary: #888888;
+            --border-color: #262626;
+            --border-focus: #ffffff;
+            --accent-color: #ffffff;
+            --accent-hover: #e0e0e0;
+            --btn-text: #0b0b0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            padding-bottom: 40px;
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+
+        .back-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .back-btn:hover {
+            border-color: var(--border-focus);
+        }
+
+        .page-title {
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .section-heading {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            background-color: #1a1a1a !important;
+            border: 1px solid var(--border-color);
+            border-radius: 12px !important;
+            color: var(--text-primary) !important;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--border-focus);
+            background-color: #222222 !important;
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--text-primary);
+            color: var(--btn-text);
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background-color 0.3s;
+        }
+
+        .action-btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        /* รายการโค้ดในระบบ */
+        .code-row {
+            display: flex;
+            align-items: center;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 10px;
+            gap: 12px;
+        }
+
+        .code-info {
+            flex: 1;
+        }
+
+        .code-text {
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 2px;
+            font-family: monospace;
+            letter-spacing: 0.5px;
+        }
+
+        .code-details {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .delete-btn {
+            background: none;
+            border: 1px solid #e74c3c;
+            color: #e74c3c;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .delete-btn:hover {
+            background: #e74c3c;
+            color: #fff;
+        }
+
+        /* ป๊อปอัพแจ้งเตือน */
+        #popup-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1300;
+            padding: 20px;
+        }
+
+        .popup-content {
+            background: #141414;
+            border: 1px solid var(--border-color);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 360px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+        }
+
+        .popup-message {
+            font-size: 13px;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            line-height: 1.6;
+            white-space: pre-line;
+            text-align: left;
+            background: rgba(255,255,255,0.02);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .popup-btn {
+            padding: 10px 24px;
+            background: var(--accent-color);
+            color: var(--btn-text);
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- แถบด้านบน -->
+        <div class="header-nav">
+            <a href="admin.html" class="back-btn">กลับหน้าแอดมิน</a>
+            <h1 class="page-title">Admin Code</h1>
+        </div>
+
+        <!-- ฟอร์มสร้างโค้ดของขวัญใหม่ -->
+        <div class="card">
+            <p class="section-heading">สร้างโค้ดของขวัญใหม่</p>
+            <div class="form-group">
+                <label>รหัสโค้ด (Code)</label>
+                <input type="text" id="gift-code-input" placeholder="เช่น WELCOME2026">
+            </div>
+            <div class="form-group">
+                <label>ประเภทของรางวัล</label>
+                <select id="reward-type" onchange="toggleRewardFields()">
+                    <option value="money">เงิน (Gold / Silver)</option>
+                    <option value="item">ไอเท็ม / อาหาร / ยา</option>
+                </select>
+            </div>
+            
+            <!-- กรณีเลือกประเภทเงิน -->
+            <div id="money-fields">
+                <div class="form-group">
+                    <label>จำนวนเงิน</label>
+                    <input type="number" id="reward-amount" placeholder="เช่น 10" min="0" step="0.01" value="10">
+                </div>
+                <div class="form-group">
+                    <label>สกุลเงิน</label>
+                    <select id="reward-currency">
+                        <option value="Gold">Gold</option>
+                        <option value="Silver">Silver</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- กรณีเลือกประเภทไอเท็ม -->
+            <div id="item-fields" style="display: none;">
+                <div class="form-group">
+                    <label>ชื่อไอเท็ม / อาหาร / ยา (ต้องตรง 100%)</label>
+                    <input type="text" id="reward-name" placeholder="ระบุชื่อไอเท็มในระบบ...">
+                </div>
+            </div>
+
+            <button type="button" class="action-btn" onclick="addNewGiftCode()">สร้างและเพิ่มโค้ด</button>
+        </div>
+
+        <!-- รายการโค้ดของขวัญทั้งหมดในระบบ -->
+        <div class="card">
+            <p class="section-heading">รายการโค้ดของขวัญในระบบ</p>
+            <div id="gift-codes-list">
+                <div style="text-align: center; color: var(--text-secondary); font-size: 12px; padding: 20px;">กำลังโหลดข้อมูล...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ป๊อปอัพแจ้งเตือน -->
+    <div id="popup-modal">
+        <div class="popup-content">
+            <p class="popup-message" id="popup-text"></p>
+            <button class="popup-btn" id="popup-close-btn">ตกลง</button>
+        </div>
+    </div>
+
+    <!-- Script ควบคุมการจัดการ Code ของแอดมิน -->
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+        const SUPABASE_URL = 'https://diyqqdqitldcwkcrjjme.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_XRBLBS50FT1HuIf1A50HCA_eLFwQFnW';
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let popupCallback = null;
+
+        function showPopup(message, callback = null) {
+            document.getElementById('popup-text').textContent = message;
+            document.getElementById('popup-modal').style.display = 'flex';
+            popupCallback = callback;
+        }
+
+        document.getElementById('popup-close-btn').addEventListener('click', () => {
+            document.getElementById('popup-modal').style.display = 'none';
+            if (popupCallback) {
+                popupCallback();
+                popupCallback = null;
+            }
+        });
+
+        window.toggleRewardFields = function() {
+            const type = document.getElementById('reward-type').value;
+            if (type === 'money') {
+                document.getElementById('money-fields').style.display = 'block';
+                document.getElementById('item-fields').style.display = 'none';
+            } else {
+                document.getElementById('money-fields').style.display = 'none';
+                document.getElementById('item-fields').style.display = 'block';
+            }
+        };
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            const { data: { session }, error } = await supabase.auth.getSession();
+            if (error || !session) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // เช็คสิทธิ์แอดมิน
+            const { data: profile } = await supabase.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle();
+            if (!profile || !profile.is_admin) {
+                window.location.href = 'home.html';
+                return;
+            }
+
+            await loadGiftCodes();
+        });
+
+        async function loadGiftCodes() {
+            const container = document.getElementById('gift-codes-list');
+            const { data: codes, error } = await supabase.from('gift_codes').select('*').order('created_at', { ascending: false });
+
+            if (error || !codes || codes.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: var(--text-secondary); font-size: 12px; padding: 20px;">ยังไม่มีโค้ดของขวัญในระบบ</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+            codes.forEach(c => {
+                const row = document.createElement('div');
+                row.className = 'code-row';
+
+                let rewardDesc = '';
+                if (c.reward_type === 'money') {
+                    rewardDesc = `รางวัล: เงิน ${c.reward_amount} ${c.reward_currency}`;
+                } else {
+                    rewardDesc = `รางวัล: ไอเท็ม "${c.reward_name}"`;
+                }
+
+                row.innerHTML = `
+                    <div class="code-info">
+                        <div class="code-text">${c.code}</div>
+                        <div class="code-details">${rewardDesc}</div>
+                    </div>
+                    <button type="button" class="delete-btn" onclick="deleteGiftCode('${c.id}')">ลบโค้ด</button>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        window.addNewGiftCode = async function() {
+            const code = document.getElementById('gift-code-input').value.trim().toUpperCase();
+            const rewardType = document.getElementById('reward-type').value;
+            
+            let rewardName = null;
+            let rewardAmount = null;
+            let rewardCurrency = null;
+
+            if (!code) {
+                showPopup('กรุณากรอกรหัสโค้ดของขวัญ');
+                return;
+            }
+
+            if (rewardType === 'money') {
+                rewardAmount = Number(document.getElementById('reward-amount').value);
+                rewardCurrency = document.getElementById('reward-currency').value;
+                if (isNaN(rewardAmount) || rewardAmount <= 0) {
+                    showPopup('กรุณากรอกจำนวนเงินให้ถูกต้อง');
+                    return;
+                }
+            } else {
+                rewardName = document.getElementById('reward-name').value.trim();
+                if (!rewardName) {
+                    showPopup('กรุณากรอกชื่อไอเท็มให้ถูกต้อง');
+                    return;
+                }
+            }
+
+            const { error } = await supabase.from('gift_codes').insert({
+                code: code,
+                reward_type: rewardType,
+                reward_name: rewardName,
+                reward_amount: rewardAmount,
+                reward_currency: rewardCurrency
+            });
+
+            if (error) {
+                showPopup('เกิดข้อผิดพลาดในการสร้างโค้ด (รหัสโค้ดนี้อาจมีอยู่แล้วในระบบ)');
+                return;
+            }
+
+            showPopup(`สร้างโค้ด "${code}" สำเร็จ!`, () => {
+                location.reload();
+            });
+        };
+
+        window.deleteGiftCode = async function(codeId) {
+            const { error } = await supabase.from('gift_codes').delete().eq('id', codeId);
+            if (error) {
+                showPopup('ไม่สามารถลบโค้ดนี้ได้');
+                return;
+            }
+            showPopup('ลบโค้ดของขวัญเรียบร้อยแล้ว (โค้ดจะหมดอายุทันที)', () => {
+                location.reload();
+            });
+        };
+    </script>
+</body>
+</html>
