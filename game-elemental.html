@@ -38,7 +38,6 @@
 
         .status-box { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 15px; padding: 12px 14px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 8px; align-items: center; }
         
-        /* ปุ่มเลือกธาตุ */
         .element-grid { display: flex; gap: 12px; justify-content: center; margin-bottom: 15px; }
         .element-btn { flex: 1; padding: 16px 10px; background: #1a1a1a; border: 1px solid var(--border-color); border-radius: 10px; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; text-align: center; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; gap: 6px; }
         .element-btn:hover { border-color: var(--border-focus); background: #262626; }
@@ -88,7 +87,6 @@
             <span id="turn-status-text" style="font-weight: 600; color: #aaa;">รอผู้เล่น...</span>
         </div>
 
-        <!-- เลือกธาตุ -->
         <div class="card" id="gameplay-card">
             <p class="section-heading">เลือกธาตุของคุณ (ไฟ ➔ ลม ➔ น้ำ ➔ ไฟ)</p>
             <div class="element-grid">
@@ -105,7 +103,6 @@
         </div>
     </div>
 
-    <!-- ป๊อปอัพแจ้งเตือน -->
     <div id="popup-modal">
         <div class="popup-content">
             <p class="popup-message" id="popup-text"></p>
@@ -185,7 +182,7 @@
             userProfile = prof || { name: 'ผู้เล่น', avatar_url: '' };
 
             if (gameMode === 'create') {
-                const { data } = await supabase.from('game_rooms').upsert({
+                const { data, error } = await supabase.from('game_rooms').upsert({
                     room_code: roomCode,
                     host_id: currentUser.id,
                     status: 'waiting',
@@ -196,6 +193,11 @@
                     p2_choice: null,
                     history: []
                 }).select().single();
+
+                if (error) {
+                    showPopup('❌ ไม่สามารถสร้างห้องได้ กรุณาลองใหม่อีกครั้ง', () => { window.location.href = 'mini-game.html'; });
+                    return;
+                }
                 roomData = data;
             } else {
                 const { data } = await supabase.from('game_rooms').select('*').eq('room_code', roomCode).single();
@@ -230,7 +232,7 @@
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'game_rooms', filter: `room_code=eq.${roomCode}` }, (payload) => {
                     if (payload.eventType === 'DELETE') {
                         if (syncInterval) clearInterval(syncInterval);
-                        if (!isLeaving && !hasFinishedGame) {
+                        if (!isLeaving && !hasFinishedGame && roomData?.host_id !== currentUser?.id) {
                             isLeaving = true;
                             showPopup('❌ โฮสต์ออกจากห้องแล้ว ห้องถูกปิดทันที', () => { window.location.href = 'mini-game.html'; });
                         }
@@ -245,7 +247,12 @@
         async function fetchRoomDataAndRender() {
             if (isLeaving) return;
             const { data, error } = await supabase.from('game_rooms').select('*').eq('room_code', roomCode).single();
+            
             if (error || !data) {
+                if (gameMode === 'create' && roomData && roomData.host_id === currentUser.id) {
+                    return;
+                }
+
                 if (syncInterval) clearInterval(syncInterval);
                 if (!isLeaving && !hasFinishedGame) {
                     isLeaving = true;
@@ -321,7 +328,6 @@
 
             await supabase.from('game_rooms').update(updateField).eq('room_code', roomCode);
 
-            // โหลดข้อมูลล่าสุดตรวจสอบว่าอีกฝ่ายเลือกหรือยัง
             const { data: latestRoom } = await supabase.from('game_rooms').select('*').eq('room_code', roomCode).single();
             if (latestRoom.p1_choice && latestRoom.p2_choice) {
                 await evaluateRound(latestRoom);
@@ -355,7 +361,6 @@
             const newHistory = [roundText, ...(room.history || [])];
             const nextRound = room.current_round + 1;
 
-            // เช็กจบเกม (ใครชนะครบ 3 รอบ หรือครบ 5 รอบ)
             const isFinished = p1Wins >= 3 || p2Wins >= 3 || nextRound > 5;
 
             await supabase.from('game_rooms').update({
