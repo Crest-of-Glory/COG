@@ -38,7 +38,6 @@
 
         .status-box { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 15px; padding: 12px 14px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 8px; align-items: center; }
         
-        /* กระดานการ์ด 4x4 */
         .memory-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px; }
         .memory-card { aspect-ratio: 1; background: #1a1a1a; border: 1px solid var(--border-color); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; user-select: none; transition: transform 0.2s, background 0.2s; }
         .memory-card:hover { border-color: var(--border-focus); background: #222; }
@@ -87,12 +86,9 @@
             <span id="turn-status-text" style="font-weight: 600; color: #aaa;">รอผู้เล่น...</span>
         </div>
 
-        <!-- กระดานจับคู่การ์ด -->
         <div class="card">
             <p class="section-heading">กระดานการ์ด (สัตว์ & ของกิน)</p>
-            <div class="memory-grid" id="memory-grid">
-                <!-- สร้างการ์ด 16 ใบผ่าน JS -->
-            </div>
+            <div class="memory-grid" id="memory-grid"></div>
         </div>
 
         <div class="card" style="text-align: center;">
@@ -100,7 +96,6 @@
         </div>
     </div>
 
-    <!-- ป๊อปอัพแจ้งเตือน -->
     <div id="popup-modal">
         <div class="popup-content">
             <p class="popup-message" id="popup-text"></p>
@@ -131,11 +126,8 @@
         let hasFinishedGame = false;
         const defaultAvatar = 'https://api.iconify.design/solar:user-circle-bold.svg?color=%23888888';
 
-        // ไอคอนสัตว์และของกินสำหรับจับคู่ (8 คู่ = 16 ใบ)
         const symbols = ['🐶', '🐱', '🐼', '🦁', '🍎', '🍕', '🍔', '🍰'];
-        let deck = [];
         let flippedCards = [];
-        let matchedPairsCount = 0;
 
         function showPopup(msg, cb = null, showCancel = false) {
             document.getElementById('popup-text').textContent = msg;
@@ -186,20 +178,17 @@
             userProfile = prof || { name: 'ผู้เล่น', avatar_url: '' };
 
             if (gameMode === 'create') {
-                // ตรวจสอบเงินในธนาคารพอไหม
                 const { data: bank } = await supabase.from('bank_accounts').select('gold').eq('id', currentUser.id).single();
                 if (!bank || Number(bank.gold) < betAmount) {
                     showPopup('❌ เงินในธนาคารของคุณไม่พอสำหรับเดิมพันนี้', () => { window.location.href = 'mini-game.html'; });
                     return;
                 }
 
-                // หักเงินเดิมพันเข้ากองกลางเริ่มต้น
                 await supabase.from('bank_accounts').update({ gold: Number(bank.gold) - betAmount }).eq('id', currentUser.id);
 
-                // สร้างชุดการ์ดสุ่ม
                 let cardDeck = [...symbols, ...symbols].sort(() => 0.5 - Math.random());
 
-                const { data } = await supabase.from('game_rooms').upsert({
+                const { data, error } = await supabase.from('game_rooms').upsert({
                     room_code: roomCode,
                     host_id: currentUser.id,
                     status: 'waiting',
@@ -211,6 +200,11 @@
                     p2_score: 0,
                     history: []
                 }).select().single();
+
+                if (error) {
+                    showPopup('❌ ไม่สามารถสร้างห้องได้ กรุณาลองใหม่อีกครั้ง', () => { window.location.href = 'mini-game.html'; });
+                    return;
+                }
                 roomData = data;
             } else {
                 const { data } = await supabase.from('game_rooms').select('*').eq('room_code', roomCode).single();
@@ -223,14 +217,12 @@
                     return;
                 }
 
-                // ตรวจสอบเงิน Guest พอไหม
                 const { data: bank } = await supabase.from('bank_accounts').select('gold').eq('id', currentUser.id).single();
                 if (!bank || Number(bank.gold) < data.bet_pool) {
                     showPopup('❌ เงินในธนาคารของคุณไม่พอร่วมเดิมพันห้องนี้', () => { window.location.href = 'mini-game.html'; });
                     return;
                 }
 
-                // หักเงิน Guest มารวมกองกลาง
                 await supabase.from('bank_accounts').update({ gold: Number(bank.gold) - data.bet_pool }).eq('id', currentUser.id);
 
                 roomData = data;
@@ -259,7 +251,7 @@
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'game_rooms', filter: `room_code=eq.${roomCode}` }, (payload) => {
                     if (payload.eventType === 'DELETE') {
                         if (syncInterval) clearInterval(syncInterval);
-                        if (!isLeaving && !hasFinishedGame) {
+                        if (!isLeaving && !hasFinishedGame && roomData?.host_id !== currentUser?.id) {
                             isLeaving = true;
                             showPopup('❌ โฮสต์ออกจากห้องแล้ว ห้องถูกปิดทันที', () => { window.location.href = 'mini-game.html'; });
                         }
@@ -275,7 +267,12 @@
         async function fetchRoomDataAndRender() {
             if (isLeaving) return;
             const { data, error } = await supabase.from('game_rooms').select('*').eq('room_code', roomCode).single();
+            
             if (error || !data) {
+                if (gameMode === 'create' && roomData && roomData.host_id === currentUser.id) {
+                    return;
+                }
+
                 if (syncInterval) clearInterval(syncInterval);
                 if (!isLeaving && !hasFinishedGame) {
                     isLeaving = true;
@@ -349,7 +346,6 @@
             const matched = roomData.matched_indices || [];
             if (matched.includes(idx)) return;
 
-            // เปิดการ์ดชั่วคราว
             const gridCards = document.getElementById('memory-grid').children;
             gridCards[idx].classList.add('flipped');
             gridCards[idx].textContent = symbol;
@@ -361,7 +357,6 @@
                 flippedCards = [];
 
                 if (card1.symbol === card2.symbol && card1.idx !== card2.idx) {
-                    // เจอคู่ที่เหมือนกัน ได้คะแนน และได้เล่นต่อ
                     const newMatched = [...matched, card1.idx, card2.idx];
                     const isHost = (roomData.host_id === currentUser.id);
                     let p1Score = roomData.p1_score || 0;
@@ -380,7 +375,6 @@
 
                     if (isFinished) checkGameResult(p1Score, p2Score);
                 } else {
-                    // เปิดผิด เปลี่ยนตาให้ฝ่ายตรงข้าม
                     setTimeout(async () => {
                         const nextTurn = (roomData.host_id === currentUser.id) ? roomData.guest_id : roomData.host_id;
                         await supabase.from('game_rooms').update({
