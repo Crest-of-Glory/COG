@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crest of Glory - จัดการเควสต์ / ภารกิจ (Admin)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0b0b0b;
+            --card-bg: #141414;
+            --text-primary: #ffffff;
+            --text-secondary: #888888;
+            --border-color: #262626;
+            --border-focus: #ffffff;
+            --accent-color: #ffffff;
+            --accent-hover: #e0e0e0;
+            --btn-text: #0b0b0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            padding-bottom: 40px;
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        .back-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .back-btn:hover {
+            border-color: var(--border-focus);
+        }
+
+        .page-title {
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            text-align: right;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .section-heading {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            background-color: #1a1a1a !important;
+            border: 1px solid var(--border-color);
+            border-radius: 12px !important;
+            color: var(--text-primary) !important;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            border-color: var(--border-focus);
+            background-color: #222222 !important;
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--text-primary);
+            color: var(--btn-text);
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background-color 0.3s;
+        }
+
+        .action-btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .quest-row {
+            display: flex;
+            align-items: center;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 10px;
+            gap: 12px;
+        }
+
+        .quest-info {
+            flex: 1;
+        }
+
+        .quest-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 2px;
+        }
+
+        .quest-details {
+            font-size: 11px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .delete-btn {
+            background: none;
+            border: 1px solid #e74c3c;
+            color: #e74c3c;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .delete-btn:hover {
+            background: #e74c3c;
+            color: #fff;
+        }
+
+        #popup-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1300;
+            padding: 20px;
+        }
+
+        .popup-content {
+            background: #141414;
+            border: 1px solid var(--border-color);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 360px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+        }
+
+        .popup-message {
+            font-size: 13px;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            line-height: 1.6;
+            white-space: pre-line;
+            text-align: left;
+            background: rgba(255,255,255,0.02);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .popup-btn {
+            padding: 10px 24px;
+            background: var(--accent-color);
+            color: var(--btn-text);
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- แถบด้านบน -->
+        <div class="header-nav">
+            <a href="admin.html" class="back-btn">← กลับหน้าแอดมิน</a>
+            <h1 class="page-title">Admin Quests</h1>
+        </div>
+
+        <!-- ฟอร์มสร้างภารกิจใหม่ -->
+        <div class="card">
+            <p class="section-heading">สร้างภารกิจใหม่</p>
+            <div class="form-group">
+                <label>ชื่อภารกิจ</label>
+                <input type="text" id="quest-title" placeholder="เช่น ทำซุป 1 ถ้วย หรือ เพิ่มเพื่อน 2 คน...">
+            </div>
+            <div class="form-group">
+                <label>รายละเอียดภารกิจ</label>
+                <textarea id="quest-desc" rows="2" placeholder="อธิบายเงื่อนไขให้ผู้เล่นทราบ..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>เงื่อนไขการตรวจเช็คภารกิจ (Action Target)</label>
+                <select id="quest-action" onchange="toggleItemSelect()">
+                    <option value="craft_food">1. ทำอาหาร (Kitchen)</option>
+                    <option value="craft_potion">2. ปรุงยา (Kitchen)</option>
+                    <option value="add_friend">3. เพิ่มเพื่อน (Friendship)</option>
+                    <option value="spend_gold">4. ใช้เงิน Gold (Store/Bank/Guild)</option>
+                    <option value="play_minigame">5. เล่นมินิเกม (Mini Game)</option>
+                    <option value="send_gift">6. ส่งของให้เพื่อน (Friendship Chat)</option>
+                    <option value="eat_food">7. กินอาหาร (Profile/Inventory)</option>
+                </select>
+            </div>
+
+            <!-- ช่องเลือกระบุเจาะจง (อาหาร/ยา หรือ มินิเกม) -->
+            <div class="form-group" id="target-item-group" style="display: block;">
+                <label id="target-item-label">ระบุเมนูอาหารเจาะจง (Optional)</label>
+                <select id="quest-target-item">
+                    <option value="">-- ไม่ระบุเมนู (อาหารอะไรก็ได้) --</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label id="target-count-label">จำนวนเป้าหมายที่ต้องทำ (Target Count / Gold)</label>
+                <input type="number" id="quest-target-count" placeholder="เช่น 1" min="1" value="1">
+            </div>
+            <div class="form-group">
+                <label>ค่าตอบแทน: EXP ที่ได้รับ</label>
+                <input type="number" id="quest-reward-exp" placeholder="เช่น 50" min="0" step="0.01" value="50">
+            </div>
+            <div class="form-group">
+                <label>ค่าตอบแทน: เงินที่ได้รับ (Gold)</label>
+                <input type="number" id="quest-reward-money" placeholder="เช่น 5" min="0" step="0.01" value="5">
+            </div>
+            <div class="form-group">
+                <label>ประเภทภารกิจ</label>
+                <select id="quest-type">
+                    <option value="mission">Mission (ภารกิจเดี่ยวผู้เล่น)</option>
+                    <option value="guild">Guild (ภารกิจกิลด์)</option>
+                </select>
+            </div>
+            <button type="button" class="action-btn" onclick="addNewQuest()">สร้างภารกิจ</button>
+        </div>
+
+        <!-- รายการภารกิจทั้งหมดในระบบ -->
+        <div class="card">
+            <p class="section-heading">รายการภารกิจทั้งหมดในระบบ</p>
+            <div id="quests-list-container">
+                <div style="text-align: center; color: var(--text-secondary); font-size: 12px; padding: 20px;">กำลังโหลดข้อมูล...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ป๊อปอัพแจ้งเตือน -->
+    <div id="popup-modal">
+        <div class="popup-content">
+            <p class="popup-message" id="popup-text"></p>
+            <button class="popup-btn" id="popup-close-btn">ตกลง</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+        const SUPABASE_URL = 'https://diyqqdqitldcwkcrjjme.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_XRBLBS50FT1HuIf1A50HCA_eLFwQFnW';
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let popupCallback = null;
+        let allRecipes = [];
+
+        function showPopup(message, callback = null) {
+            document.getElementById('popup-text').textContent = message;
+            document.getElementById('popup-modal').style.display = 'flex';
+            popupCallback = callback;
+        }
+
+        document.getElementById('popup-close-btn').addEventListener('click', () => {
+            document.getElementById('popup-modal').style.display = 'none';
+            if (popupCallback) {
+                popupCallback();
+                popupCallback = null;
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            const { data: { session }, error } = await supabase.auth.getSession();
+            if (error || !session) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            const { data: profile } = await supabase.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle();
+            if (!profile || !profile.is_admin) {
+                window.location.href = 'home.html';
+                return;
+            }
+
+            await loadRecipes();
+            await loadQuests();
+            toggleItemSelect();
+        });
+
+        async function loadRecipes() {
+            const { data: recipes } = await supabase.from('kitchen_recipes').select('name, category');
+            if (recipes) {
+                allRecipes = recipes;
+            }
+        }
+
+        window.toggleItemSelect = function() {
+            const action = document.getElementById('quest-action').value;
+            const itemGroup = document.getElementById('target-item-group');
+            const itemLabel = document.getElementById('target-item-label');
+            const itemSelect = document.getElementById('quest-target-item');
+            const countLabel = document.getElementById('target-count-label');
+
+            if (action === 'craft_food' || action === 'craft_potion') {
+                itemGroup.style.display = 'block';
+                countLabel.textContent = 'จำนวนที่ต้องปรุง (ชิ้น / ครั้ง)';
+                
+                const isFood = action === 'craft_food';
+                itemLabel.textContent = isFood ? 'ระบุเมนูอาหารเจาะจง (Optional)' : 'ระบุเมนูยาเจาะจง (Optional)';
+                itemSelect.innerHTML = isFood ? '<option value="">-- 不ระบุเมนู (อาหารอะไรก็ได้) --</option>' : '<option value="">-- 不ระบุเมนู (ยาอะไรก็ได้) --</option>';
+                
+                const targetCat = isFood ? 'food' : 'potion';
+                const filtered = allRecipes.filter(r => r.category === targetCat);
+                
+                filtered.forEach(r => {
+                    const opt = document.createElement('option');
+                    opt.value = r.name;
+                    opt.textContent = r.name;
+                    itemSelect.appendChild(opt);
+                });
+            } else if (action === 'play_minigame') {
+                itemGroup.style.display = 'block';
+                itemLabel.textContent = 'ระบุมินิเกมเจาะจง (Optional)';
+                countLabel.textContent = 'จำนวนครั้งที่ต้องเล่น';
+                itemSelect.innerHTML = `
+                    <option value="">-- เล่นเกมอะไรก็ได้ --</option>
+                    <option value="Code Breaker">Code Breaker</option>
+                    <option value="Tap Duel">Tap Duel</option>
+                    <option value="Shadow Pairs">Shadow Pairs</option>
+                    <option value="Elemental Clash">Elemental Clash</option>
+                `;
+            } else {
+                itemGroup.style.display = 'none';
+                itemSelect.value = '';
+                if (action === 'spend_gold') {
+                    countLabel.textContent = 'จำนวนเงิน Gold ที่ต้องใช้';
+                } else if (action === 'add_friend') {
+                    countLabel.textContent = 'จำนวนเพื่อนที่ต้องเพิ่ม (คน)';
+                } else if (action === 'send_gift') {
+                    countLabel.textContent = 'จำนวนชิ้นของขวัญที่ต้องส่งให้เพื่อน';
+                } else if (action === 'eat_food') {
+                    countLabel.textContent = 'จำนวนครั้งที่ต้องกดกินอาหาร';
+                } else {
+                    countLabel.textContent = 'จำนวนเป้าหมายที่ต้องทำ';
+                }
+            }
+        };
+
+        async function loadQuests() {
+            const container = document.getElementById('quests-list-container');
+            const { data: quests, error } = await supabase.from('quests').select('*');
+
+            if (error || !quests || quests.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: var(--text-secondary); font-size: 12px; padding: 20px;">ยังไม่มีภารกิจในระบบ</div>';
+                return;
+            }
+
+            const actionMap = {
+                'craft_food': 'ทำอาหาร',
+                'craft_potion': 'ปรุงยา',
+                'add_friend': 'เพิ่มเพื่อน',
+                'spend_gold': 'ใช้เงิน Gold',
+                'play_minigame': 'เล่นมินิเกม',
+                'send_gift': 'ส่งของให้เพื่อน',
+                'eat_food': 'กินอาหาร'
+            };
+
+            container.innerHTML = '';
+            quests.forEach(q => {
+                const row = document.createElement('div');
+                row.className = 'quest-row';
+
+                const typeLabel = q.quest_type === 'mission' ? 'ภารกิจเดี่ยว' : 'ภารกิจกิลด์';
+                const actionLabel = actionMap[q.action_type] || q.action_type || 'ทั่วไป';
+                const targetCount = q.target_count || 1;
+                const specificItem = q.target_item_name ? ` [ระบุ: ${q.target_item_name}]` : '';
+
+                row.innerHTML = `
+                    <div class="quest-info">
+                        <div class="quest-title">${q.title} [${typeLabel}]</div>
+                        <div class="quest-details">
+                            เงื่อนไข: ${actionLabel}${specificItem} (${targetCount} ${q.action_type === 'spend_gold' ? 'Gold' : 'ครั้ง/คน' })<br>
+                            ${q.description || 'ไม่มีรายละเอียด'}<br>
+                            รางวัล: EXP +${q.reward_exp} | เงิน +${q.reward_money} Gold
+                        </div>
+                    </div>
+                    <button type="button" class="delete-btn" onclick="deleteQuest('${q.id}')">ลบ</button>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        window.addNewQuest = async function() {
+            const title = document.getElementById('quest-title').value.trim();
+            const description = document.getElementById('quest-desc').value.trim();
+            const actionType = document.getElementById('quest-action').value;
+            const targetItemName = document.getElementById('quest-target-item').value || null;
+            const targetCount = Number(document.getElementById('quest-target-count').value) || 1;
+            const rewardExp = Number(document.getElementById('quest-reward-exp').value);
+            const rewardMoney = Number(document.getElementById('quest-reward-money').value);
+            const questType = document.getElementById('quest-type').value;
+
+            if (!title || isNaN(rewardExp) || isNaN(rewardMoney)) {
+                showPopup('กรุณากรอกชื่อภารกิจและค่าตอบแทนให้ถูกต้อง');
+                return;
+            }
+
+            const { error } = await supabase.from('quests').insert({
+                title: title,
+                description: description,
+                action_type: actionType,
+                target_item_name: targetItemName,
+                target_count: targetCount,
+                reward_exp: rewardExp,
+                reward_money: rewardMoney,
+                quest_type: questType
+            });
+
+            if (error) {
+                showPopup('เกิดข้อผิดพลาดในการสร้างภารกิจ: ' + error.message);
+                return;
+            }
+
+            showPopup('สร้างภารกิจสำเร็จ!', () => {
+                location.reload();
+            });
+        };
+
+        window.deleteQuest = async function(questId) {
+            const { error } = await supabase.from('quests').delete().eq('id', questId);
+            if (error) {
+                showPopup('ไม่สามารถลบภารกิจนี้ได้');
+                return;
+            }
+            showPopup('ลบภารกิจเรียบร้อยแล้ว', () => {
+                location.reload();
+            });
+        };
+    </script>
+</body>
+</html>
