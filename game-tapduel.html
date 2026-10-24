@@ -41,7 +41,6 @@
         .hp-track { width: 100%; height: 8px; background: #262626; border-radius: 4px; overflow: hidden; }
         .hp-fill { height: 100%; background: #fff; width: 100%; transition: width 0.3s; }
 
-        /* พื้นที่สนามประลองกดจังหวะ */
         .arena-box { position: relative; height: 260px; background: #111; border: 1px solid var(--border-color); border-radius: 10px; overflow: hidden; display: flex; justify-content: space-around; align-items: flex-end; padding-bottom: 15px; margin-bottom: 15px; }
         .lane { position: relative; width: 22%; height: 100%; border-right: 1px dashed rgba(255,255,255,0.1); display: flex; flex-direction: column; align-items: center; }
         .lane:last-child { border-right: none; }
@@ -93,7 +92,6 @@
             </div>
         </div>
 
-        <!-- หลอดเลือด HP ทั้งสองฝ่าย -->
         <div class="hp-bar-container">
             <div class="hp-info">
                 <span id="my-hp-label">เลือดของคุณ: 100 / 100</span>
@@ -102,7 +100,6 @@
             <div class="hp-track"><div class="hp-fill" id="my-hp-fill"></div></div>
         </div>
 
-        <!-- สนามประลอง Tap Duel -->
         <div class="card" style="padding: 15px;">
             <div class="arena-box" id="arena-box">
                 <div class="hit-line"></div>
@@ -124,7 +121,6 @@
         </div>
     </div>
 
-    <!-- ป๊อปอัพแจ้งเตือน -->
     <div id="popup-modal">
         <div class="popup-content">
             <p class="popup-message" id="popup-text"></p>
@@ -154,7 +150,6 @@
         let hasFinishedGame = false;
         const defaultAvatar = 'https://api.iconify.design/solar:user-circle-bold.svg?color=%23888888';
 
-        // สถานะเกมฝั่งผู้เล่น
         let myHp = 100;
         let enemyHp = 100;
         let activeNotes = [];
@@ -211,12 +206,18 @@
             myHp = Number(prof.hp || 100);
 
             if (gameMode === 'create') {
-                const { data } = await supabase.from('game_rooms').upsert({
+                // สร้างห้องใหม่ทันที
+                const { data, error } = await supabase.from('game_rooms').upsert({
                     room_code: roomCode,
                     host_id: currentUser.id,
                     status: 'waiting',
                     history: []
                 }).select().single();
+
+                if (error) {
+                    showPopup('❌ ไม่สามารถสร้างห้องได้ กรุณาลองใหม่อีกครั้ง', () => { window.location.href = 'mini-game.html'; });
+                    return;
+                }
                 roomData = data;
             } else {
                 const { data } = await supabase.from('game_rooms').select('*').eq('room_code', roomCode).single();
@@ -225,7 +226,9 @@
                     return;
                 }
                 if (data.host_id === currentUser.id) {
-                    showPopup('❌ คุณเป็นโฮสต์ของห้องนี้ ไม่สามารถเข้าร่วมเป็นผู้เล่นคนที่ 2 ได้', () => { window.location.href = 'mini-game.html'; });
+                    showPopup('❌ คุณเป็นโฮสต์ของห้องนี้ ไม่สามารถเข้าร่วมเป็นผู้เล่นคนที่ 2 ได้', () => {
+                        window.location.href = 'mini-game.html';
+                    });
                     return;
                 }
                 roomData = data;
@@ -247,9 +250,12 @@
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'game_rooms', filter: `room_code=eq.${roomCode}` }, (payload) => {
                     if (payload.eventType === 'DELETE') {
                         if (syncInterval) clearInterval(syncInterval);
-                        if (!isLeaving && !hasFinishedGame) {
+                        // ถ้าเราเป็น Host แล้วห้องถูกลบ ไม่ต้องแจ้งเตือนตัวเอง
+                        if (!isLeaving && !hasFinishedGame && roomData?.host_id !== currentUser?.id) {
                             isLeaving = true;
-                            showPopup('❌ โฮสต์ออกจากห้องแล้ว ห้องถูกปิดทันที', () => { window.location.href = 'mini-game.html'; });
+                            showPopup('❌ โฮสต์ออกจากห้องแล้ว ห้องถูกปิดทันที', () => {
+                                window.location.href = 'mini-game.html';
+                            });
                         }
                         return;
                     }
@@ -262,7 +268,13 @@
         async function fetchRoomDataAndRender() {
             if (isLeaving) return;
             const { data, error } = await supabase.from('game_rooms').select('*').eq('room_code', roomCode).single();
+            
             if (error || !data) {
+                // ป้องกันไม่ให้ Host โดนดีดออกเองเวลารอคนเข้าห้องแล้ว query จังหวะแรกยังไม่เจอ
+                if (gameMode === 'create' && roomData && roomData.host_id === currentUser.id) {
+                    return; 
+                }
+
                 if (syncInterval) clearInterval(syncInterval);
                 if (!isLeaving && !hasFinishedGame) {
                     isLeaving = true;
@@ -300,7 +312,6 @@
         };
 
         function startTapGameLoop() {
-            // สร้างโน้ตตกลงมาทุกๆ 800 มิลลิวินาที
             noteSpawner = setInterval(() => {
                 const laneIdx = Math.floor(Math.random() * 4);
                 const types = ['normal', 'normal', 'sword', 'bomb'];
@@ -310,20 +321,17 @@
                     id: Date.now() + Math.random(),
                     lane: laneIdx,
                     type: type,
-                    y: 0 // ตำแหน่งจากด้านบน
+                    y: 0
                 };
                 activeNotes.push(note);
             }, 800);
 
-            // ลูปเคลื่อนที่โน้ต
             gameInterval = setInterval(() => {
-                const arena = document.getElementById('arena-box');
-                // ล้างโน้ตเก่าใน DOM
                 document.querySelectorAll('.tap-note').forEach(el => el.remove());
 
                 activeNotes.forEach((n, index) => {
-                    n.y += 3; // ความเร็วตกลงมา
-                    if (n.y > 210) { // หลุดเลยเส้น Hit line ถือว่าพลาด
+                    n.y += 3;
+                    if (n.y > 210) {
                         handleMissNote(n);
                         activeNotes.splice(index, 1);
                         return;
@@ -342,27 +350,21 @@
         }
 
         window.tapLane = function(laneIdx) {
-            // ค้นหาโน้ตที่อยู่ในระยะกด (y ระหว่าง 170 ถึง 215)
             const index = activeNotes.findIndex(n => n.lane === laneIdx && n.y >= 160 && n.y <= 215);
             if (index !== -1) {
                 const note = activeNotes[index];
                 activeNotes.splice(index, 1);
 
-                if (note.type === 'normal') {
-                    // กดโน้ตปกติสำเร็จ
-                } else if (note.type === 'sword') {
-                    // โจมตีคู่ต่อสู้ -10 HP
+                if (note.type === 'sword') {
                     enemyHp = Math.max(0, enemyHp - 10);
                     updateHpDisplay();
                     checkWinLoss();
                 } else if (note.type === 'bomb') {
-                    // เผลอกดระเบิด ตัวเอง -10 HP
                     myHp = Math.max(0, myHp - 10);
                     updateHpDisplay();
                     checkWinLoss();
                 }
             } else {
-                // กดวืด เสียเลือดฟรี 5 หน่วย
                 myHp = Math.max(0, myHp - 5);
                 updateHpDisplay();
                 checkWinLoss();
@@ -371,7 +373,6 @@
 
         function handleMissNote(note) {
             if (note.type === 'normal' || note.type === 'sword') {
-                // ปล่อยโน้ตดีหลุด เสีย 5 HP
                 myHp = Math.max(0, myHp - 5);
                 updateHpDisplay();
                 checkWinLoss();
