@@ -22,12 +22,13 @@
         body { background-color: var(--bg-color); color: var(--text-primary); min-height: 100vh; padding: 20px; display: flex; flex-direction: column; align-items: center; }
         .container { width: 100%; max-width: 480px; padding-bottom: 40px; }
         
-        /* จัด Layout Header ให้หัวข้ออยู่กึ่งกลางสวยงาม */
+        /* จัด Layout Header ให้มีช่องไฟห่างจากปุ่มพอดี ไม่ชิดกัน */
         .header-nav { 
             display: flex; 
             align-items: center; 
             justify-content: space-between; 
             margin-bottom: 20px; 
+            padding: 0 4px;
         }
         .back-btn { 
             background: none; 
@@ -49,6 +50,7 @@
             text-transform: uppercase; 
             white-space: nowrap;
             text-align: center;
+            margin-left: 15px; /* เพิ่มช่องไฟขยับออกจากปุ่ม */
         }
         
         .card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
@@ -79,11 +81,11 @@
 <body>
 
     <div class="container">
-        <!-- แถบด้านบน: ใช้กล่องเปล่าปรับสมดุลให้หัวข้ออยู่ตรงกลาง -->
+        <!-- แถบด้านบน: ปรับระยะห่างและช่องไฟ -->
         <div class="header-nav">
             <a href="home.html" class="back-btn">กลับหน้าหลัก</a>
             <h1 class="page-title">Mission Quests</h1>
-            <div style="width: 85px;"></div>
+            <div style="width: 75px;"></div>
         </div>
 
         <!-- แบนเนอร์คูลดาวน์ -->
