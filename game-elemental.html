@@ -252,7 +252,6 @@
                 if (gameMode === 'create' && roomData && roomData.host_id === currentUser.id) {
                     return;
                 }
-
                 if (syncInterval) clearInterval(syncInterval);
                 if (!isLeaving && !hasFinishedGame) {
                     isLeaving = true;
@@ -378,9 +377,7 @@
 
             if (isFinished) {
                 const winnerName = (p1Wins > p2Wins) ? 'Host' : (p2Wins > p1Wins) ? 'Guest' : 'เสมอกัน';
-                showPopup(`🎉 จบการประลองธาตุ!\nผู้ชนะคือ: ${winnerName}`, () => {
-                    window.location.href = 'mini-game.html';
-                });
+                showPopup(`🎉 จบการประลองธาตุ!\nผู้ชนะคือ: ${winnerName}`, () => { window.location.href = 'mini-game.html'; });
             }
         }
 
