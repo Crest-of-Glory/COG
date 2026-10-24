@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crest of Glory - Tap Duel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0b0b0b;
+            --card-bg: #141414;
+            --text-primary: #ffffff;
+            --text-secondary: #888888;
+            --border-color: #262626;
+            --border-focus: #ffffff;
+            --accent-color: #ffffff;
+            --accent-hover: #e0e0e0;
+            --btn-text: #0b0b0b;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-primary); min-height: 100vh; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .container { width: 100%; max-width: 480px; padding-bottom: 40px; }
+        .header-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .back-btn { background: none; border: 1px solid var(--border-color); color: var(--text-primary); padding: 8px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; text-decoration: none; transition: all 0.3s; }
+        .back-btn:hover { border-color: var(--border-focus); }
+        .page-title { font-size: 15px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+        
+        .card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+        .section-heading { font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; text-align: center; }
+        
+        .players-container { display: flex; gap: 10px; margin-bottom: 16px; }
+        .player-box { flex: 1; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 10px; padding: 10px; display: flex; align-items: center; gap: 10px; }
+        .player-avatar { width: 40px; height: 40px; border-radius: 50%; background: #262626; object-fit: cover; border: 1px solid var(--border-color); }
+        .player-info { display: flex; flex-direction: column; overflow: hidden; }
+        .player-name { font-size: 13px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .player-role { font-size: 10px; color: var(--text-secondary); text-transform: uppercase; margin-top: 2px; }
+
+        .hp-bar-container { margin-bottom: 15px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; }
+        .hp-info { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px; font-weight: 600; }
+        .hp-track { width: 100%; height: 8px; background: #262626; border-radius: 4px; overflow: hidden; }
+        .hp-fill { height: 100%; background: #fff; width: 100%; transition: width 0.3s; }
+
+        /* พื้นที่สนามประลองกดจังหวะ */
+        .arena-box { position: relative; height: 260px; background: #111; border: 1px solid var(--border-color); border-radius: 10px; overflow: hidden; display: flex; justify-content: space-around; align-items: flex-end; padding-bottom: 15px; margin-bottom: 15px; }
+        .lane { position: relative; width: 22%; height: 100%; border-right: 1px dashed rgba(255,255,255,0.1); display: flex; flex-direction: column; align-items: center; }
+        .lane:last-child { border-right: none; }
+        
+        .tap-note { position: absolute; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; cursor: pointer; user-select: none; box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: transform 0.1s; }
+        .note-normal { background: #fff; color: #000; }
+        .note-sword { background: #e74c3c; color: #fff; }
+        .note-bomb { background: #f39c12; color: #fff; }
+
+        .hit-line { position: absolute; bottom: 40px; width: 100%; height: 3px; background: rgba(255,255,255,0.4); }
+
+        .lane-btn { width: 22%; padding: 12px 0; background: rgba(255,255,255,0.08); border: 1px solid var(--border-color); color: #fff; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; text-align: center; }
+        .lane-btn:active { background: #fff; color: #000; }
+        
+        .action-btn { width: 100%; padding: 12px; background: var(--accent-color); color: var(--btn-text); border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; text-transform: uppercase; transition: all 0.2s; }
+        .action-btn:disabled { background: #262626; color: #666; cursor: not-allowed; }
+
+        #popup-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(4px); justify-content: center; align-items: center; z-index: 1300; padding: 20px; }
+        .popup-content { background: #141414; border: 1px solid var(--border-color); padding: 25px; border-radius: 12px; text-align: center; max-width: 360px; width: 100%; }
+        .popup-message { font-size: 13px; margin-bottom: 20px; color: var(--text-primary); line-height: 1.6; white-space: pre-line; background: rgba(255,255,255,0.02); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); text-align: left; }
+        .popup-btn { padding: 10px 24px; background: var(--accent-color); color: var(--btn-text); border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; width: 100%; }
+        .popup-btn-group { display: flex; gap: 10px; }
+        .popup-btn-cancel { background: #262626; color: #fff; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header-nav">
+            <button type="button" class="back-btn" onclick="confirmLeaveRoom()">ออกห้องเกม</button>
+            <h1 class="page-title">Tap Duel</h1>
+            <span id="room-badge" style="font-size: 11px; color: var(--text-secondary); font-weight: bold;">ห้อง: ----</span>
+        </div>
+
+        <div class="players-container">
+            <div class="player-box">
+                <img src="https://api.iconify.design/solar:user-circle-bold.svg?color=%23888888" class="player-avatar" id="p1-avatar">
+                <div class="player-info">
+                    <span class="player-name" id="p1-name">รอ Host...</span>
+                    <span class="player-role">Host</span>
+                </div>
+            </div>
+            <div class="player-box" id="p2-box" style="opacity: 0.4;">
+                <img src="https://api.iconify.design/solar:user-circle-bold.svg?color=%23888888" class="player-avatar" id="p2-avatar">
+                <div class="player-info">
+                    <span class="player-name" id="p2-name">รอผู้เล่น...</span>
+                    <span class="player-role">Guest</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- หลอดเลือด HP ทั้งสองฝ่าย -->
+        <div class="hp-bar-container">
+            <div class="hp-info">
+                <span id="my-hp-label">เลือดของคุณ: 100 / 100</span>
+                <span id="enemy-hp-label">คู่ต่อสู้: 100 / 100</span>
+            </div>
+            <div class="hp-track"><div class="hp-fill" id="my-hp-fill"></div></div>
+        </div>
+
+        <!-- สนามประลอง Tap Duel -->
+        <div class="card" style="padding: 15px;">
+            <div class="arena-box" id="arena-box">
+                <div class="hit-line"></div>
+                <div class="lane" id="lane-0"></div>
+                <div class="lane" id="lane-1"></div>
+                <div class="lane" id="lane-2"></div>
+                <div class="lane" id="lane-3"></div>
+            </div>
+            <div style="display: flex; justify-content: space-around;">
+                <button type="button" class="lane-btn" onclick="tapLane(0)">1</button>
+                <button type="button" class="lane-btn" onclick="tapLane(1)">2</button>
+                <button type="button" class="lane-btn" onclick="tapLane(2)">3</button>
+                <button type="button" class="lane-btn" onclick="tapLane(3)">4</button>
+            </div>
+        </div>
+
+        <div class="card" style="text-align: center;">
+            <button type="button" class="action-btn" id="start-btn" onclick="startGame()" disabled>รอผู้เล่นครบเพื่อเริ่มดวล</button>
+        </div>
+    </div>
+
+    <!-- ป๊อปอัพแจ้งเตือน -->
+    <div id="popup-modal">
+        <div class="popup-content">
+            <p class="popup-message" id="popup-text"></p>
+            <div id="popup-actions">
+                <button class="popup-btn" id="popup-close-btn">ตกลง</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+        const SUPABASE_URL = 'https://diyqqdqitldcwkcrjjme.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_XRBLBS50FT1HuIf1A50HCA_eLFwQFnW';
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentUser = null;
+        let userProfile = null;
+        const urlParams = new URLSearchParams(window.location.search);
+        const roomCode = urlParams.get('room') || '0000';
+        const gameMode = urlParams.get('mode') || 'create';
+
+        let roomData = null;
+        let roomSubscription = null;
+        let syncInterval = null;
+        let isLeaving = false;
+        let hasFinishedGame = false;
+        const defaultAvatar = 'https://api.iconify.design/solar:user-circle-bold.svg?color=%23888888';
+
+        // สถานะเกมฝั่งผู้เล่น
+        let myHp = 100;
+        let enemyHp = 100;
+        let activeNotes = [];
+        let gameInterval = null;
+        let noteSpawner = null;
+
+        function showPopup(msg, cb = null, showCancel = false) {
+            document.getElementById('popup-text').textContent = msg;
+            document.getElementById('popup-modal').style.display = 'flex';
+            
+            const actionsContainer = document.getElementById('popup-actions');
+            if (showCancel) {
+                actionsContainer.innerHTML = `
+                    <div class="popup-btn-group">
+                        <button class="popup-btn popup-btn-cancel" id="popup-cancel-btn">ยกเลิก</button>
+                        <button class="popup-btn" id="popup-ok-btn">ยืนยันออก</button>
+                    </div>
+                `;
+                document.getElementById('popup-cancel-btn').onclick = () => { document.getElementById('popup-modal').style.display = 'none'; };
+                document.getElementById('popup-ok-btn').onclick = () => { document.getElementById('popup-modal').style.display = 'none'; if (cb) cb(); };
+            } else {
+                actionsContainer.innerHTML = `<button class="popup-btn" id="popup-close-btn">ตกลง</button>`;
+                document.getElementById('popup-close-btn').onclick = () => { document.getElementById('popup-modal').style.display = 'none'; if (cb) cb(); };
+            }
+        }
+
+        window.addEventListener('beforeunload', () => {
+            if (!hasFinishedGame && !isLeaving && currentUser) {
+                applyLeavePenaltyQuiet();
+            }
+        });
+
+        async function applyLeavePenaltyQuiet() {
+            try {
+                const { data: bank } = await supabase.from('bank_accounts').select('gold').eq('id', currentUser.id).single();
+                if (bank) {
+                    await supabase.from('bank_accounts').update({ gold: Math.max(0, Number(bank.gold) - 5) }).eq('id', currentUser.id);
+                }
+                if (roomData && roomData.host_id === currentUser.id) {
+                    await supabase.from('game_rooms').delete().eq('room_code', roomCode);
+                }
+            } catch (e) {}
+        }
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            document.getElementById('room-badge').textContent = `ห้อง: ${roomCode}`;
+
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) { window.location.href = 'index.html'; return; }
+            currentUser = session.user;
+
+            const { data: prof } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+            userProfile = prof || { name: 'ผู้เล่น', avatar_url: '' };
+            myHp = Number(prof.hp || 100);
+
+            if (gameMode === 'create') {
+                const { data } = await supabase.from('game_rooms').upsert({
+                    room_code: roomCode,
+                    host_id: currentUser.id,
+                    status: 'waiting',
+                    history: []
+                }).select().single();
+                roomData = data;
+            } else {
+                const { data } = await supabase.from('game_rooms').select('*').eq('room_code', roomCode).single();
+                if (!data) {
+                    showPopup('❌ ไม่พบห้องนี้ในระบบหรือโฮสต์ออกจากห้องแล้ว', () => { window.location.href = 'mini-game.html'; });
+                    return;
+                }
+                if (data.host_id === currentUser.id) {
+                    showPopup('❌ คุณเป็นโฮสต์ของห้องนี้ ไม่สามารถเข้าร่วมเป็นผู้เล่นคนที่ 2 ได้', () => { window.location.href = 'mini-game.html'; });
+                    return;
+                }
+                roomData = data;
+                if (!roomData.guest_id || roomData.guest_id !== currentUser.id) {
+                    await supabase.from('game_rooms').update({ guest_id: currentUser.id, status: 'playing' }).eq('room_code', roomCode);
+                    roomData.guest_id = currentUser.id;
+                    roomData.status = 'playing';
+                }
+            }
+
+            await fetchRoomDataAndRender();
+            setupRealtimeSubscription();
+
+            syncInterval = setInterval(async () => { await fetchRoomDataAndRender(); }, 3000);
+        });
+
+        function setupRealtimeSubscription() {
+            roomSubscription = supabase.channel(`room_${roomCode}`)
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'game_rooms', filter: `room_code=eq.${roomCode}` }, (payload) => {
+                    if (payload.eventType === 'DELETE') {
+                        if (syncInterval) clearInterval(syncInterval);
+                        if (!isLeaving && !hasFinishedGame) {
+                            isLeaving = true;
+                            showPopup('❌ โฮสต์ออกจากห้องแล้ว ห้องถูกปิดทันที', () => { window.location.href = 'mini-game.html'; });
+                        }
+                        return;
+                    }
+                    roomData = payload.new;
+                    updateRoomUI();
+                })
+                .subscribe();
+        }
+
+        async function fetchRoomDataAndRender() {
+            if (isLeaving) return;
+            const { data, error } = await supabase.from('game_rooms').select('*').eq('room_code', roomCode).single();
+            if (error || !data) {
+                if (syncInterval) clearInterval(syncInterval);
+                if (!isLeaving && !hasFinishedGame) {
+                    isLeaving = true;
+                    showPopup('❌ โฮสต์ออกจากห้องแล้ว ห้องถูกปิดทันที', () => { window.location.href = 'mini-game.html'; });
+                }
+                return;
+            }
+            roomData = data;
+            updateRoomUI();
+        }
+
+        function updateRoomUI() {
+            if (!roomData) return;
+            if (roomData.host_id) {
+                supabase.from('profiles').select('name, avatar_url').eq('id', roomData.host_id).single().then(({data}) => {
+                    if (data) { document.getElementById('p1-name').textContent = data.name; document.getElementById('p1-avatar').src = data.avatar_url || defaultAvatar; }
+                });
+            }
+            if (roomData.guest_id) {
+                document.getElementById('p2-box').style.opacity = '1';
+                supabase.from('profiles').select('name, avatar_url').eq('id', roomData.guest_id).single().then(({data}) => {
+                    if (data) { document.getElementById('p2-name').textContent = data.name; document.getElementById('p2-avatar').src = data.avatar_url || defaultAvatar; }
+                });
+                const startBtn = document.getElementById('start-btn');
+                if (roomData.status === 'playing') {
+                    startBtn.disabled = false;
+                    startBtn.textContent = 'เริ่มดวลจังหวะดนตรี!';
+                }
+            }
+        }
+
+        window.startGame = function() {
+            document.getElementById('start-btn').style.display = 'none';
+            startTapGameLoop();
+        };
+
+        function startTapGameLoop() {
+            // สร้างโน้ตตกลงมาทุกๆ 800 มิลลิวินาที
+            noteSpawner = setInterval(() => {
+                const laneIdx = Math.floor(Math.random() * 4);
+                const types = ['normal', 'normal', 'sword', 'bomb'];
+                const type = types[Math.floor(Math.random() * types.length)];
+                
+                const note = {
+                    id: Date.now() + Math.random(),
+                    lane: laneIdx,
+                    type: type,
+                    y: 0 // ตำแหน่งจากด้านบน
+                };
+                activeNotes.push(note);
+            }, 800);
+
+            // ลูปเคลื่อนที่โน้ต
+            gameInterval = setInterval(() => {
+                const arena = document.getElementById('arena-box');
+                // ล้างโน้ตเก่าใน DOM
+                document.querySelectorAll('.tap-note').forEach(el => el.remove());
+
+                activeNotes.forEach((n, index) => {
+                    n.y += 3; // ความเร็วตกลงมา
+                    if (n.y > 210) { // หลุดเลยเส้น Hit line ถือว่าพลาด
+                        handleMissNote(n);
+                        activeNotes.splice(index, 1);
+                        return;
+                    }
+
+                    const laneEl = document.getElementById(`lane-${n.lane}`);
+                    const noteEl = document.createElement('div');
+                    noteEl.className = `tap-note note-${n.type}`;
+                    noteEl.style.top = `${n.y}px`;
+                    if (n.type === 'normal') noteEl.textContent = '🎵';
+                    if (n.type === 'sword') noteEl.textContent = '⚔️';
+                    if (n.type === 'bomb') noteEl.textContent = '💣';
+                    laneEl.appendChild(noteEl);
+                });
+            }, 30);
+        }
+
+        window.tapLane = function(laneIdx) {
+            // ค้นหาโน้ตที่อยู่ในระยะกด (y ระหว่าง 170 ถึง 215)
+            const index = activeNotes.findIndex(n => n.lane === laneIdx && n.y >= 160 && n.y <= 215);
+            if (index !== -1) {
+                const note = activeNotes[index];
+                activeNotes.splice(index, 1);
+
+                if (note.type === 'normal') {
+                    // กดโน้ตปกติสำเร็จ
+                } else if (note.type === 'sword') {
+                    // โจมตีคู่ต่อสู้ -10 HP
+                    enemyHp = Math.max(0, enemyHp - 10);
+                    updateHpDisplay();
+                    checkWinLoss();
+                } else if (note.type === 'bomb') {
+                    // เผลอกดระเบิด ตัวเอง -10 HP
+                    myHp = Math.max(0, myHp - 10);
+                    updateHpDisplay();
+                    checkWinLoss();
+                }
+            } else {
+                // กดวืด เสียเลือดฟรี 5 หน่วย
+                myHp = Math.max(0, myHp - 5);
+                updateHpDisplay();
+                checkWinLoss();
+            }
+        };
+
+        function handleMissNote(note) {
+            if (note.type === 'normal' || note.type === 'sword') {
+                // ปล่อยโน้ตดีหลุด เสีย 5 HP
+                myHp = Math.max(0, myHp - 5);
+                updateHpDisplay();
+                checkWinLoss();
+            }
+        }
+
+        function updateHpDisplay() {
+            document.getElementById('my-hp-label').textContent = `เลือดของคุณ: ${myHp} / 100`;
+            document.getElementById('my-hp-fill').style.width = `${myHp}%`;
+        }
+
+        async function checkWinLoss() {
+            if (myHp <= 0 && !hasFinishedGame) {
+                hasFinishedGame = true;
+                clearInterval(gameInterval);
+                clearInterval(noteSpawner);
+                showPopup('💀 คุณพ่ายแพ้ในศึกดวลจังหวะ!', async () => {
+                    await applyLoserPenalty();
+                });
+            } else if (enemyHp <= 0 && !hasFinishedGame) {
+                hasFinishedGame = true;
+                clearInterval(gameInterval);
+                clearInterval(noteSpawner);
+                showPopup('🎉 ยินดีด้วย! คุณชนะการดวล Tap Duel!', async () => {
+                    await rewardWinner();
+                });
+            }
+        }
+
+        window.confirmLeaveRoom = function() {
+            if (hasFinishedGame || roomData?.status === 'waiting') {
+                leaveRoomAction();
+                return;
+            }
+            showPopup('⚠️ คำเตือน!\nหากคุณออกระหว่างเกม จะต้องเสียค่าปรับ 5 Gold ยืนยันการออกหรือไม่?', async () => {
+                await applyLeavePenaltyAndExit();
+            }, true);
+        };
+
+        async function applyLeavePenaltyAndExit() {
+            isLeaving = true;
+            if (gameInterval) clearInterval(gameInterval);
+            if (noteSpawner) clearInterval(noteSpawner);
+            const { data: bank } = await supabase.from('bank_accounts').select('gold').eq('id', currentUser.id).single();
+            if (bank) {
+                await supabase.from('bank_accounts').update({ gold: Math.max(0, Number(bank.gold) - 5) }).eq('id', currentUser.id);
+            }
+            await cleanupAndExit();
+        }
+
+        async function leaveRoomAction() {
+            isLeaving = true;
+            if (gameInterval) clearInterval(gameInterval);
+            if (noteSpawner) clearInterval(noteSpawner);
+            await cleanupAndExit();
+        }
+
+        async function cleanupAndExit() {
+            if (roomData && roomData.host_id === currentUser.id) {
+                await supabase.from('game_rooms').delete().eq('room_code', roomCode);
+            }
+            window.location.href = 'mini-game.html';
+        }
+
+        async function rewardWinner() {
+            hasFinishedGame = true;
+            const { data: bank } = await supabase.from('bank_accounts').select('gold').eq('id', currentUser.id).single();
+            if (bank) {
+                await supabase.from('bank_accounts').update({ gold: Number(bank.gold) + 5 }).eq('id', currentUser.id);
+            }
+            window.location.href = 'mini-game.html';
+        }
+
+        async function applyLoserPenalty() {
+            hasFinishedGame = true;
+            await supabase.from('profiles').update({ hp: myHp }).eq('id', currentUser.id);
+            window.location.href = 'mini-game.html';
+        }
+    </script>
+</body>
+</html>
