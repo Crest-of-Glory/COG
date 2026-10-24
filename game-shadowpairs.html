@@ -272,7 +272,6 @@
                 if (gameMode === 'create' && roomData && roomData.host_id === currentUser.id) {
                     return;
                 }
-
                 if (syncInterval) clearInterval(syncInterval);
                 if (!isLeaving && !hasFinishedGame) {
                     isLeaving = true;
@@ -377,9 +376,7 @@
                 } else {
                     setTimeout(async () => {
                         const nextTurn = (roomData.host_id === currentUser.id) ? roomData.guest_id : roomData.host_id;
-                        await supabase.from('game_rooms').update({
-                            current_turn: nextTurn
-                        }).eq('room_code', roomCode);
+                        await supabase.from('game_rooms').update({ current_turn: nextTurn }).eq('room_code', roomCode);
                     }, 800);
                 }
             }
@@ -394,17 +391,11 @@
             let enemyScore = isHost ? p2Score : p1Score;
 
             if (myScore > enemyScore) {
-                showPopup(`🎉 ยินดีด้วยคุณชนะ!\nกวาดเงินกองกลาง ${roomData.bet_pool} Gold!`, async () => {
-                    await rewardWinner();
-                });
+                showPopup(`🎉 ยินดีด้วยคุณชนะ!\nกวาดเงินกองกลาง ${roomData.bet_pool} Gold!`, async () => { await rewardWinner(); });
             } else if (myScore < enemyScore) {
-                showPopup(`💀 คุณพ่ายแพ้ในเกมจับคู่การ์ด!`, async () => {
-                    window.location.href = 'mini-game.html';
-                });
+                showPopup(`💀 คุณพ่ายแพ้ในเกมจับคู่การ์ด!`, async () => { window.location.href = 'mini-game.html'; });
             } else {
-                showPopup(`🤝 เสมอกัน! คืนเงินเดิมพัน`, async () => {
-                    await refundBet();
-                });
+                showPopup(`🤝 เสมอกัน! คืนเงินเดิมพัน`, async () => { await refundBet(); });
             }
         }
 
